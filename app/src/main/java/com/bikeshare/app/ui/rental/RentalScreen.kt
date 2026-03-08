@@ -159,6 +159,7 @@ private fun RentedBikeCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReturnBikeDialog(
     bike: RentedBikeDto,
