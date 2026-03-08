@@ -42,7 +42,7 @@ fun AdminCouponsScreen(
                 },
                 actions = {
                     IconButton(onClick = { showGenerateDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Generate")
+                        Icon(Icons.Default.Add, contentDescription = stringResource(R.string.admin_generate))
                     }
                 },
             )
@@ -67,11 +67,11 @@ fun AdminCouponsScreen(
                             ) {
                                 Column {
                                     Text(coupon.coupon, style = MaterialTheme.typography.titleMedium)
-                                    coupon.value?.let { Text("Value: $it", style = MaterialTheme.typography.bodySmall) }
-                                    coupon.status?.let { Text("Status: $it", style = MaterialTheme.typography.bodySmall) }
+                                    coupon.value?.let { Text(stringResource(R.string.admin_value, it.toString()), style = MaterialTheme.typography.bodySmall) }
+                                    coupon.status?.let { Text(stringResource(R.string.admin_status, it), style = MaterialTheme.typography.bodySmall) }
                                 }
                                 IconButton(onClick = { viewModel.sellCoupon(coupon.coupon) }) {
-                                    Icon(Icons.Default.Sell, contentDescription = "Mark as sold")
+                                    Icon(Icons.Default.Sell, contentDescription = stringResource(R.string.admin_mark_sold))
                                 }
                             }
                         }
@@ -85,12 +85,12 @@ fun AdminCouponsScreen(
         var multiplier by remember { mutableStateOf("1") }
         AlertDialog(
             onDismissRequest = { showGenerateDialog = false },
-            title = { Text("Generate Coupons") },
+            title = { Text(stringResource(R.string.admin_generate_coupons)) },
             text = {
                 OutlinedTextField(
                     value = multiplier,
                     onValueChange = { if (it.all { c -> c.isDigit() }) multiplier = it },
-                    label = { Text("Multiplier") },
+                    label = { Text(stringResource(R.string.admin_multiplier)) },
                     singleLine = true,
                 )
             },
@@ -98,7 +98,7 @@ fun AdminCouponsScreen(
                 Button(onClick = {
                     multiplier.toIntOrNull()?.let { viewModel.generateCoupons(it) }
                     showGenerateDialog = false
-                }) { Text("Generate") }
+                }) { Text(stringResource(R.string.admin_generate)) }
             },
             dismissButton = {
                 TextButton(onClick = { showGenerateDialog = false }) { Text(stringResource(R.string.cancel)) }

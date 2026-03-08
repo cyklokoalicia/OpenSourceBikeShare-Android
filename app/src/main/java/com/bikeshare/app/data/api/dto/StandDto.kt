@@ -12,6 +12,7 @@ data class StandMarkerDto(
     @Json(name = "latitude") val latitude: Double,
     @Json(name = "longitude") val longitude: Double,
     @Json(name = "bikeCount") val bikeCount: Int? = null,
+    @Json(name = "serviceTag") val serviceTag: Int? = null,
 )
 
 @JsonClass(generateAdapter = true)

@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +27,17 @@ fun AdminBikesScreen(
     viewModel: AdminBikesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredBikes = remember(uiState.bikes, searchQuery) {
+        if (searchQuery.isBlank()) uiState.bikes
+        else uiState.bikes.filter { bike ->
+            bike.bikeNum.toString().contains(searchQuery, ignoreCase = true) ||
+                bike.standName?.contains(searchQuery, ignoreCase = true) == true ||
+                bike.userName?.contains(searchQuery, ignoreCase = true) == true ||
+                bike.notes?.contains(searchQuery, ignoreCase = true) == true
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -38,36 +51,54 @@ fun AdminBikesScreen(
             )
         },
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (uiState.isLoading && uiState.bikes.isEmpty()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(uiState.bikes) { bike ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onBikeClick(bike.bikeNum) },
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text(stringResource(R.string.admin_search_bikes)) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = null)
+                        }
+                    }
+                },
+                singleLine = true,
+            )
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (uiState.isLoading && uiState.bikes.isEmpty()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(filteredBikes) { bike ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onBikeClick(bike.bikeNum) },
                             ) {
-                                Icon(Icons.Default.DirectionsBike, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column {
-                                    Text("#${bike.bikeNum}", style = MaterialTheme.typography.titleMedium)
-                                    bike.standName?.let {
-                                        Text("Stand: $it", style = MaterialTheme.typography.bodySmall)
-                                    }
-                                    bike.userName?.let {
-                                        Text("User: $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
-                                    }
-                                    bike.notes?.let {
-                                        if (it.isNotBlank()) Text("⚠ $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(Icons.Default.DirectionsBike, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column {
+                                        Text("#${bike.bikeNum}", style = MaterialTheme.typography.titleMedium)
+                                        bike.standName?.let {
+                                            Text("Stand: $it", style = MaterialTheme.typography.bodySmall)
+                                        }
+                                        bike.userName?.let {
+                                            Text("User: $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                                        }
+                                        bike.notes?.let {
+                                            if (it.isNotBlank()) Text("⚠ $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                                        }
                                     }
                                 }
                             }

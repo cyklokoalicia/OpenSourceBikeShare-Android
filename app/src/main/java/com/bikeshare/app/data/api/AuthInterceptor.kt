@@ -13,9 +13,14 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        // Skip auth header for token & refresh endpoints
+        // Skip auth header for auth endpoints that work without token
         val path = request.url.encodedPath
-        if (path.endsWith("/auth/token") || path.endsWith("/auth/refresh")) {
+        if (
+            path.endsWith("/auth/token") ||
+            path.endsWith("/auth/refresh") ||
+            path.endsWith("/auth/register") ||
+            path.endsWith("/auth/cities")
+        ) {
             return chain.proceed(request)
         }
 

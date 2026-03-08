@@ -39,3 +39,22 @@ data class ForceReturnRequest(
     @Json(name = "standName") val standName: String,
     @Json(name = "note") val note: String? = null,
 )
+
+@JsonClass(generateAdapter = true)
+data class RentSystemResultDto(
+    @Json(name = "error") val error: Boolean = false,
+    @Json(name = "message") val message: String? = null,
+    @Json(name = "code") val code: String? = null,
+    @Json(name = "params") val params: RentSystemParamsDto? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class RentSystemParamsDto(
+    @Json(name = "bikeNumber") val bikeNumber: Int? = null,
+    @Json(name = "currentCode") val currentCode: String? = null,
+    @Json(name = "newCode") val newCode: String? = null,
+    @Json(name = "standName") val standName: String? = null,
+    @Json(name = "note") val note: String? = null,
+    @Json(name = "creditChange") val creditChange: Double? = null,
+    @Json(name = "creditCurrency") val creditCurrency: String? = null,
+)

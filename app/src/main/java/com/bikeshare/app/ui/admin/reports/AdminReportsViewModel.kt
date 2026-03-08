@@ -34,7 +34,7 @@ class AdminReportsViewModel @Inject constructor(
 
     fun loadDailyReport() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true, userReport = null, inactiveBikes = null)
             when (val result = safeApiCall(moshi) { api.getDailyReport() }) {
                 is NetworkResult.Success -> {
                     _uiState.value = _uiState.value.copy(dailyReport = result.data, isLoading = false)
@@ -49,7 +49,7 @@ class AdminReportsViewModel @Inject constructor(
 
     fun loadUserReport(year: Int? = null) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true, dailyReport = null, inactiveBikes = null)
             val result = if (year != null) {
                 safeApiCall(moshi) { api.getUserReportByYear(year) }
             } else {
@@ -69,7 +69,7 @@ class AdminReportsViewModel @Inject constructor(
 
     fun loadInactiveBikes() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true, dailyReport = null, userReport = null)
             when (val result = safeApiCall(moshi) { api.getInactiveBikesReport() }) {
                 is NetworkResult.Success -> {
                     _uiState.value = _uiState.value.copy(inactiveBikes = result.data, isLoading = false)

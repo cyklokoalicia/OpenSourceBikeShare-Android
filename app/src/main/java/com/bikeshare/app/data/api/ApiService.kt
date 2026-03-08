@@ -16,6 +16,19 @@ interface ApiService {
     @POST("auth/logout")
     suspend fun logout(@Body body: LogoutRequest): Response<ApiEnvelope<Any>>
 
+    @POST("auth/register")
+    suspend fun register(@Body body: RegisterRequest): Response<ApiEnvelope<RegisterResponse>>
+
+    @GET("auth/cities")
+    suspend fun getCities(): Response<ApiEnvelope<List<String>>>
+
+    // ── User (authenticated) ─────────────────────────────────────────────
+    @POST("user/phone-confirm/request")
+    suspend fun phoneConfirmRequest(): Response<ApiEnvelope<PhoneConfirmRequestResponse>>
+
+    @POST("user/phone-confirm/verify")
+    suspend fun phoneConfirmVerify(@Body body: PhoneConfirmVerifyRequest): Response<ApiEnvelope<Any>>
+
     // ── Stands (public) ─────────────────────────────────────────────────
     @GET("stands/markers")
     suspend fun getStandMarkers(): Response<ApiEnvelope<List<StandMarkerDto>>>
@@ -27,10 +40,10 @@ interface ApiService {
 
     // ── Rentals ─────────────────────────────────────────────────────────
     @POST("rentals")
-    suspend fun rentBike(@Body body: RentRequest): Response<ApiEnvelope<Any>>
+    suspend fun rentBike(@Body body: RentRequest): Response<ApiEnvelope<RentSystemResultDto>>
 
     @POST("returns")
-    suspend fun returnBike(@Body body: ReturnRequest): Response<ApiEnvelope<Any>>
+    suspend fun returnBike(@Body body: ReturnRequest): Response<ApiEnvelope<RentSystemResultDto>>
 
     // ── Me ───────────────────────────────────────────────────────────────
     @GET("me/bikes")
@@ -38,6 +51,12 @@ interface ApiService {
 
     @GET("me/limits")
     suspend fun getMyLimits(): Response<ApiEnvelope<UserLimitsDto>>
+
+    @GET("me/credit-history")
+    suspend fun getCreditHistory(): Response<ApiEnvelope<List<CreditHistoryItemDto>>>
+
+    @GET("me/trips")
+    suspend fun getMyTrips(): Response<ApiEnvelope<List<TripItemDto>>>
 
     @PATCH("me/city")
     suspend fun changeCity(@Body body: ChangeCityRequest): Response<ApiEnvelope<Any>>

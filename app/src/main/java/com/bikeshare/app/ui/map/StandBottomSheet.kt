@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.KeyboardReturn
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -15,13 +16,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.bikeshare.app.R
 import com.bikeshare.app.data.api.dto.BikeOnStandDto
+import com.bikeshare.app.data.api.dto.RentedBikeDto
 import com.bikeshare.app.data.api.dto.StandMarkerDto
 
 @Composable
 fun StandBottomSheet(
     stand: StandMarkerDto,
     bikes: List<BikeOnStandDto>,
+    myBikes: List<RentedBikeDto>,
     onRentBike: (Int) -> Unit,
+    onReturnBike: (Int) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -44,6 +48,23 @@ fun StandBottomSheet(
         }
 
         Spacer(modifier = Modifier.height(12.dp))
+
+        // Return bike section
+        if (myBikes.isNotEmpty()) {
+            myBikes.forEach { bike ->
+                Button(
+                    onClick = { onReturnBike(bike.bikeNum) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                ) {
+                    Icon(Icons.Default.KeyboardReturn, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("${stringResource(R.string.return_button)} #${bike.bikeNum}")
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         Text(
             text = "${bikes.size} ${stringResource(R.string.bikes_available)}",
@@ -92,38 +113,46 @@ private fun BikeItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.weight(1f, fill = true),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Icon(
                     imageVector = Icons.Default.DirectionsBike,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Column {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "#${bike.bikeNum}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
-                    bike.notes?.let {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                    bike.notes?.takeIf { it.isNotBlank() }?.let { note ->
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = null,
-                                modifier = Modifier.size(14.dp),
+                                modifier = Modifier.size(14.dp).padding(top = 2.dp),
                                 tint = MaterialTheme.colorScheme.error,
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = it,
+                                text = note,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.weight(1f, fill = true),
                             )
                         }
                     }
                 }
             }
-
+            Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = onRent) {
                 Text(stringResource(R.string.rent_button))
             }

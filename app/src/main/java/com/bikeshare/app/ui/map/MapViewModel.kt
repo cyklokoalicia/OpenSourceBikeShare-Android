@@ -3,10 +3,14 @@ package com.bikeshare.app.ui.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bikeshare.app.data.api.dto.BikeOnStandDto
+import com.bikeshare.app.data.api.dto.RentedBikeDto
+import com.bikeshare.app.data.api.dto.RentSystemResultDto
 import com.bikeshare.app.data.api.dto.StandMarkerDto
+import com.bikeshare.app.data.api.dto.UserLimitsDto
 import com.bikeshare.app.domain.repository.RentalRepository
 import com.bikeshare.app.domain.repository.StandRepository
 import com.bikeshare.app.util.NetworkResult
+import com.bikeshare.app.util.buildReturnDisplayMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,9 +21,13 @@ data class MapUiState(
     val stands: List<StandMarkerDto> = emptyList(),
     val selectedStand: StandMarkerDto? = null,
     val standBikes: List<BikeOnStandDto> = emptyList(),
+    val myBikes: List<RentedBikeDto> = emptyList(),
+    val limits: UserLimitsDto? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
     val rentResult: String? = null,
+    val rentCodeInfo: RentSystemResultDto? = null,
+    val returnResult: String? = null,
 )
 
 @HiltViewModel
@@ -33,6 +41,8 @@ class MapViewModel @Inject constructor(
 
     init {
         loadStandMarkers()
+        loadMyBikes()
+        loadLimits()
     }
 
     fun loadStandMarkers() {
@@ -65,6 +75,30 @@ class MapViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedStand = null, standBikes = emptyList())
     }
 
+    private fun loadMyBikes() {
+        viewModelScope.launch {
+            when (val result = rentalRepository.getMyBikes()) {
+                is NetworkResult.Success -> {
+                    _uiState.value = _uiState.value.copy(myBikes = result.data)
+                }
+                is NetworkResult.Error -> {}
+                is NetworkResult.Loading -> {}
+            }
+        }
+    }
+
+    private fun loadLimits() {
+        viewModelScope.launch {
+            when (val result = rentalRepository.getMyLimits()) {
+                is NetworkResult.Success -> {
+                    _uiState.value = _uiState.value.copy(limits = result.data)
+                }
+                is NetworkResult.Error -> {}
+                is NetworkResult.Loading -> {}
+            }
+        }
+    }
+
     private fun loadStandBikes(standName: String) {
         viewModelScope.launch {
             when (val result = standRepository.getBikes(standName)) {
@@ -86,10 +120,38 @@ class MapViewModel @Inject constructor(
                 is NetworkResult.Success -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        rentResult = "Bike $bikeNumber rented successfully!",
+                        rentCodeInfo = result.data,
                     )
-                    // Refresh stand bikes
                     _uiState.value.selectedStand?.let { loadStandBikes(it.standName) }
+                    loadStandMarkers()
+                    loadMyBikes()
+                    loadLimits()
+                }
+                is NetworkResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = result.message,
+                    )
+                }
+                is NetworkResult.Loading -> {}
+            }
+        }
+    }
+
+    fun returnBike(bikeNumber: Int, standName: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            when (val result = rentalRepository.returnBike(bikeNumber, standName, null)) {
+                is NetworkResult.Success -> {
+                    val msg = buildReturnDisplayMessage(result.data, standName)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        returnResult = msg,
+                    )
+                    _uiState.value.selectedStand?.let { loadStandBikes(it.standName) }
+                    loadStandMarkers()
+                    loadMyBikes()
+                    loadLimits()
                 }
                 is NetworkResult.Error -> {
                     _uiState.value = _uiState.value.copy(
@@ -108,5 +170,13 @@ class MapViewModel @Inject constructor(
 
     fun clearRentResult() {
         _uiState.value = _uiState.value.copy(rentResult = null)
+    }
+
+    fun clearRentCodeInfo() {
+        _uiState.value = _uiState.value.copy(rentCodeInfo = null)
+    }
+
+    fun clearReturnResult() {
+        _uiState.value = _uiState.value.copy(returnResult = null)
     }
 }

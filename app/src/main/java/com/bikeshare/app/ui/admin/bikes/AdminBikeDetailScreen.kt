@@ -1,6 +1,8 @@
 package com.bikeshare.app.ui.admin.bikes
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -14,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bikeshare.app.R
 import com.bikeshare.app.data.api.dto.BikeDetailDto
+import com.bikeshare.app.data.api.dto.BikeLastUsageDto
 import com.bikeshare.app.domain.repository.BikeRepository
 import com.bikeshare.app.util.NetworkResult
 import androidx.lifecycle.SavedStateHandle
@@ -30,6 +33,7 @@ import javax.inject.Inject
 
 data class AdminBikeDetailUiState(
     val bike: BikeDetailDto? = null,
+    val lastUsage: BikeLastUsageDto? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
     val message: String? = null,
@@ -50,6 +54,7 @@ class AdminBikeDetailViewModel @Inject constructor(
 
     init {
         loadBike()
+        loadLastUsage()
     }
 
     fun loadBike() {
@@ -62,6 +67,18 @@ class AdminBikeDetailViewModel @Inject constructor(
                 is NetworkResult.Error -> {
                     _uiState.value = _uiState.value.copy(error = result.message, isLoading = false)
                 }
+                is NetworkResult.Loading -> {}
+            }
+        }
+    }
+
+    private fun loadLastUsage() {
+        viewModelScope.launch {
+            when (val result = safeApiCall(moshi) { api.getBikeLastUsage(bikeNumber) }) {
+                is NetworkResult.Success -> {
+                    _uiState.value = _uiState.value.copy(lastUsage = result.data)
+                }
+                is NetworkResult.Error -> { /* silently ignore */ }
                 is NetworkResult.Loading -> {}
             }
         }
@@ -148,7 +165,8 @@ fun AdminBikeDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -157,13 +175,13 @@ fun AdminBikeDetailScreen(
             uiState.bike?.let { bike ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Bike #${bike.bikeNum}", style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(R.string.bike_number, bike.bikeNum), style = MaterialTheme.typography.headlineMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        bike.standName?.let { Text("Stand: $it") }
-                        bike.userName?.let { Text("Rented by: $it", color = MaterialTheme.colorScheme.primary) }
-                        bike.rentTime?.let { Text("Rent time: $it") }
+                        bike.standName?.let { Text(stringResource(R.string.admin_stand_label, it)) }
+                        bike.userName?.let { Text(stringResource(R.string.admin_rented_by, it), color = MaterialTheme.colorScheme.primary) }
+                        bike.rentTime?.let { Text(stringResource(R.string.admin_rent_time, it)) }
                         bike.notes?.let {
-                            if (it.isNotBlank()) Text("Note: $it", color = MaterialTheme.colorScheme.error)
+                            if (it.isNotBlank()) Text(stringResource(R.string.admin_note_label, it), color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }
@@ -181,7 +199,7 @@ fun AdminBikeDetailScreen(
                     ) {
                         Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Set Code")
+                        Text(stringResource(R.string.admin_set_code))
                     }
 
                     OutlinedButton(
@@ -190,7 +208,7 @@ fun AdminBikeDetailScreen(
                     ) {
                         Icon(Icons.Default.DeleteSweep, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Del Notes")
+                        Text(stringResource(R.string.admin_del_notes))
                     }
                 }
 
@@ -203,7 +221,37 @@ fun AdminBikeDetailScreen(
                 ) {
                     Icon(Icons.Default.Undo, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Revert Bike State")
+                    Text(stringResource(R.string.admin_revert_bike_state))
+                }
+
+                // Last usage section
+                uiState.lastUsage?.let { usage ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(stringResource(R.string.admin_last_usage), style = MaterialTheme.typography.titleMedium)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (usage.notes?.isNotBlank() == true) {
+                        Text(stringResource(R.string.admin_notes_label, usage.notes!!), color = MaterialTheme.colorScheme.error)
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    usage.history.forEach { item ->
+                        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+                            Row(modifier = Modifier.padding(12.dp)) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        "${item.action ?: ""}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                    )
+                                    item.userName?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                                }
+                                Column(horizontalAlignment = Alignment.End) {
+                                    item.standName?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                                        ?: item.parameter?.let { Text(stringResource(R.string.admin_code_label, it), style = MaterialTheme.typography.bodySmall) }
+                                    item.time?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -213,12 +261,12 @@ fun AdminBikeDetailScreen(
         var code by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { showLockCodeDialog = false },
-            title = { Text("Set Lock Code") },
+            title = { Text(stringResource(R.string.admin_set_lock_code)) },
             text = {
                 OutlinedTextField(
                     value = code,
                     onValueChange = { if (it.length <= 4 && it.all { c -> c.isDigit() }) code = it },
-                    label = { Text("4-digit code") },
+                    label = { Text(stringResource(R.string.admin_lock_code_hint)) },
                     singleLine = true,
                 )
             },
@@ -229,7 +277,7 @@ fun AdminBikeDetailScreen(
                         showLockCodeDialog = false
                     },
                     enabled = code.length == 4,
-                ) { Text("Set") }
+                ) { Text(stringResource(R.string.admin_set)) }
             },
             dismissButton = {
                 TextButton(onClick = { showLockCodeDialog = false }) { Text(stringResource(R.string.cancel)) }

@@ -22,6 +22,25 @@ data class UserLimitsDto(
     @Json(name = "limit") val limit: Int? = null,
     @Json(name = "rented") val rented: Int? = null,
     @Json(name = "userCredit") val userCredit: Double? = null,
+    @Json(name = "freeTimeMinutes") val freeTimeMinutes: Int? = null,
+    @Json(name = "privileges") val privileges: Int? = null,
+)
+
+@JsonClass(generateAdapter = true)
+data class CreditHistoryItemDto(
+    @Json(name = "date") val date: String,
+    @Json(name = "amount") val amount: Double,
+    @Json(name = "type") val type: String,
+    @Json(name = "balance") val balance: Double,
+)
+
+@JsonClass(generateAdapter = true)
+data class TripItemDto(
+    @Json(name = "rentTime") val rentTime: String,
+    @Json(name = "bikeNumber") val bikeNumber: Int,
+    @Json(name = "returnTime") val returnTime: String? = null,
+    @Json(name = "standName") val standName: String? = null,
+    @Json(name = "fromStandName") val fromStandName: String? = null,
 )
 
 @JsonClass(generateAdapter = true)

@@ -135,27 +135,27 @@ fun AdminUserEditScreen(
             uiState.user?.let { user ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("User #${user.userId}", style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(R.string.admin_user_id, user.userId), style = MaterialTheme.typography.headlineMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        user.username?.let { Text("Name: $it") }
-                        user.number?.let { Text("Phone: $it") }
-                        user.mail?.let { Text("Email: $it") }
-                        user.city?.let { Text("City: $it") }
-                        Text("Privileges: ${user.privileges ?: 0}")
-                        user.credit?.let { Text("Credit: $it") }
-                        user.userLimit?.let { Text("Limit: $it") }
+                        user.username?.let { Text(stringResource(R.string.admin_name, it)) }
+                        user.number?.let { Text(stringResource(R.string.admin_phone, it)) }
+                        user.mail?.let { Text(stringResource(R.string.admin_email, it)) }
+                        user.city?.let { Text(stringResource(R.string.admin_city, it)) }
+                        Text(stringResource(R.string.admin_privileges, user.privileges ?: 0))
+                        user.credit?.let { Text(stringResource(R.string.admin_credit, it.toString())) }
+                        user.userLimit?.let { Text(stringResource(R.string.admin_limit, it)) }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Add Credit", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.add_credit), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
                         value = creditMultiplier,
                         onValueChange = { if (it.all { c -> c.isDigit() }) creditMultiplier = it },
-                        label = { Text("Multiplier") },
+                        label = { Text(stringResource(R.string.admin_multiplier)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                     )
@@ -164,7 +164,7 @@ fun AdminUserEditScreen(
                         onClick = { creditMultiplier.toIntOrNull()?.let { viewModel.addCredit(it) } },
                         enabled = (creditMultiplier.toIntOrNull() ?: 0) > 0,
                     ) {
-                        Text("Add")
+                        Text(stringResource(R.string.admin_add))
                     }
                 }
             }

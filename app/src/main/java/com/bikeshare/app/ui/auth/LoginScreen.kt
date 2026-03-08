@@ -10,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -17,11 +19,16 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
+import com.bikeshare.app.BuildConfig
 import com.bikeshare.app.R
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (phoneConfirmed: Boolean) -> Unit,
+    onNavigateToRegister: () -> Unit = {},
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -32,7 +39,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onLoginSuccess()
+            onLoginSuccess(uiState.phoneConfirmed)
         }
     }
 
@@ -43,12 +50,17 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(
-            imageVector = Icons.Default.DirectionsBike,
-            contentDescription = null,
-            modifier = Modifier.size(80.dp),
-            tint = MaterialTheme.colorScheme.primary,
-        )
+        if (BuildConfig.LOGO_URL.isNotBlank()) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(BuildConfig.LOGO_URL)
+                    .decoderFactory(SvgDecoder.Factory())
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.size(96.dp),
+                contentScale = ContentScale.Fit,
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -105,6 +117,11 @@ fun LoginScreen(
             } else {
                 Text(stringResource(R.string.login_button))
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        TextButton(onClick = onNavigateToRegister) {
+            Text(stringResource(R.string.register_link))
         }
 
         uiState.error?.let { error ->

@@ -20,16 +20,27 @@ import com.bikeshare.app.R
 @Composable
 fun ProfileScreen(
     onNavigateToCredit: () -> Unit,
+    onNavigateToCreditHistory: () -> Unit,
+    onNavigateToTrips: () -> Unit,
     onLogout: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.loggedOut) {
         if (uiState.loggedOut) onLogout()
     }
 
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.clearError()
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.nav_profile)) },
@@ -47,36 +58,39 @@ fun ProfileScreen(
                 .padding(padding)
                 .padding(16.dp),
         ) {
-            // Credit card
-            uiState.limits?.let { limits ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    ),
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.CreditCard, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.credit_balance),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
+            // Credit card (always show; refresh limits when missing)
+            LaunchedEffect(Unit) {
+                if (uiState.limits == null) viewModel.loadLimits()
+            }
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CreditCard, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "${limits.userCredit ?: 0.0}",
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            text = stringResource(R.string.credit_balance),
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = uiState.limits?.userCredit?.let { "$it" } ?: "—",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
                 }
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                // Limits card
+            // Limits card
+            uiState.limits?.let { limits ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,12 +102,14 @@ fun ProfileScreen(
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        val remaining = (limits.limit ?: 0) - (limits.rented ?: 0)
+                        // limit = remaining slots (userLimit - rented), rented = current count; total = limit + rented
+                        val remaining = limits.limit ?: 0
+                        val total = remaining + (limits.rented ?: 0)
                         Text(
                             text = stringResource(
                                 R.string.remaining_limit,
                                 remaining,
-                                limits.limit ?: 0,
+                                total,
                             ),
                             style = MaterialTheme.typography.bodyLarge,
                         )
@@ -109,6 +125,24 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.add_credit))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = onNavigateToCreditHistory,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.credit_history))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = onNavigateToTrips,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.recent_trips))
             }
 
             if (uiState.isLoading) {

@@ -3,17 +3,17 @@ package com.bikeshare.app.data.api.dto
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-/** Generic success envelope: { data: T, meta: { requestId, timestamp } } */
+/** Generic success envelope: { data: T, meta?: { requestId, timestamp } } — meta optional for resilience */
 @JsonClass(generateAdapter = true)
 data class ApiEnvelope<T>(
     @Json(name = "data") val data: T,
-    @Json(name = "meta") val meta: ResponseMeta,
+    @Json(name = "meta") val meta: ResponseMeta? = null,
 )
 
 @JsonClass(generateAdapter = true)
 data class ResponseMeta(
-    @Json(name = "requestId") val requestId: String,
-    @Json(name = "timestamp") val timestamp: String,
+    @Json(name = "requestId") val requestId: String? = null,
+    @Json(name = "timestamp") val timestamp: String? = null,
 )
 
 /** application/problem+json error body */

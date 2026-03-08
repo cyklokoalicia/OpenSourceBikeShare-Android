@@ -7,6 +7,7 @@ import com.bikeshare.app.data.api.dto.StandMarkerDto
 import com.bikeshare.app.domain.repository.RentalRepository
 import com.bikeshare.app.domain.repository.StandRepository
 import com.bikeshare.app.util.NetworkResult
+import com.bikeshare.app.util.buildReturnDisplayMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,7 +76,7 @@ class RentalViewModel @Inject constructor(
                 is NetworkResult.Success -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        returnResult = "Bike $bikeNumber returned to $standName",
+                        returnResult = buildReturnDisplayMessage(result.data, standName),
                     )
                     loadRentedBikes()
                 }

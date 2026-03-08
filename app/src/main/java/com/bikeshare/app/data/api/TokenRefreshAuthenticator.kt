@@ -36,7 +36,11 @@ class TokenRefreshAuthenticator @Inject constructor(
 
                 val newTokens = refreshAccessToken(refreshToken, response.request)
                 if (newTokens != null) {
-                    tokenStorage.saveTokens(newTokens.accessToken, newTokens.refreshToken)
+                    tokenStorage.saveTokens(
+                        newTokens.accessToken,
+                        newTokens.refreshToken,
+                        newTokens.phoneConfirmed != false,
+                    )
                     response.request.newBuilder()
                         .header("Authorization", "Bearer ${newTokens.accessToken}")
                         .header("X-Retry", "true")

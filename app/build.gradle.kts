@@ -19,8 +19,16 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // API base URL — override per build type / flavor
-        buildConfigField("String", "API_BASE_URL", "\"https://whitebikes.info/api/v1/\"")
+        // Build-time config: set in gradle.properties or env (e.g. API_BASE_URL, APP_NAME, LOGO_URL)
+        val appName = (project.findProperty("APP_NAME") as? String)?.takeIf { it.isNotBlank() } ?: "BikeShare"
+        val logoUrl = (project.findProperty("LOGO_URL") as? String)?.takeIf { it.isNotBlank() } ?: "https://whitebikes.info/images/logo_small.svg"
+        val apiBaseUrl = (project.findProperty("API_BASE_URL") as? String)?.takeIf { it.isNotBlank() } ?: "https://whitebikes.info/api/v1/"
+
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        buildConfigField("String", "APP_NAME", "\"$appName\"")
+        buildConfigField("String", "LOGO_URL", "\"$logoUrl\"")
+
+        resValue("string", "app_name", "\"$appName\"")
     }
 
     buildTypes {
@@ -103,12 +111,16 @@ dependencies {
 
     // Image Loading
     implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     // Logging
     implementation(libs.timber)
 
     // Coroutines
     implementation(libs.coroutines.android)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Testing
     testImplementation(libs.junit)

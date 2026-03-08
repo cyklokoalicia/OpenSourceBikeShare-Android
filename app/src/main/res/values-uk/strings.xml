@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BikeShare</string>
+    <!-- app_name from build config (APP_NAME in gradle.properties) -->
 
     <!-- Navigation -->
     <string name="nav_map">Карта</string>
@@ -12,6 +12,29 @@
     <string name="login_phone_number">Номер телефону</string>
     <string name="login_password">Пароль</string>
     <string name="login_button">Увійти</string>
+    <string name="register_link">Створити обліковий запис</string>
+
+    <!-- Register -->
+    <string name="register_title">Реєстрація</string>
+    <string name="register_fullname">Ім\'я та прізвище</string>
+    <string name="register_city">Місто</string>
+    <string name="register_city_hint">Виберіть місто</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Пароль</string>
+    <string name="register_password_confirm">Підтвердіть пароль</string>
+    <string name="register_phone">Номер телефону</string>
+    <string name="register_agree">Я прочитав(ла) та погоджуюсь з умовами використання</string>
+    <string name="register_button">Зареєструватися</string>
+    <string name="register_success">Реєстрація успішна. Перевірте email, щоб завершити реєстрацію.</string>
+    <string name="register_confirm_hint">Відкрийте посилання для підтвердження з листа, який ми надіслали. Після цього ви зможете увійти.</string>
+    <string name="back_to_login">Повернутися до входу</string>
+
+    <!-- Phone verification -->
+    <string name="phone_verify_title">Підтвердження номера телефону</string>
+    <string name="phone_verify_description">Код підтвердження буде надіслано на ваш телефон. Введіть його нижче.</string>
+    <string name="phone_verify_send_code">Надіслати код</string>
+    <string name="phone_verify_code_hint">SMS-код</string>
+    <string name="phone_verify_submit">Підтвердити</string>
 
     <!-- Map -->
     <string name="bikes_available">велосипедів доступно</string>
@@ -19,6 +42,8 @@
     <string name="rent_button">Орендувати</string>
     <string name="qr_scan">Сканувати QR</string>
     <string name="qr_scan_instruction">Наведіть камеру на QR-код на велосипеді або стенді</string>
+    <string name="my_location">Моє місце</string>
+    <string name="service_stand">Сервіс</string>
 
     <!-- Rentals -->
     <string name="no_rented_bikes">У вас немає орендованих велосипедів</string>
@@ -43,6 +68,23 @@
     <string name="enter_coupon_code">Введіть код купона</string>
     <string name="coupon_code">Код купона</string>
     <string name="redeem_coupon">Активувати купон</string>
+    <string name="credit_history">Історія кредитів</string>
+    <string name="recent_trips">Останні поїздки</string>
+    <string name="trip_bike_stand">Велосипед #%1$d → %2$s</string>
+    <string name="trip_from_to">Велосипед #%1$d: %2$s → %3$s</string>
+    <string name="trip_bike_no_return">Велосипед #%1$d (в оренді)</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_rental">Оренда велосипеда</string>
+    <string name="notification_free_time_title">Скоро кінець безкоштовного часу</string>
+    <string name="notification_free_time_text">Велосипед #%1$d: безкоштовна оренда закінчується через 5 хв.</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+
+    <!-- Trips / Credit empty state -->
+    <string name="trips_none">— ще немає</string>
+    <string name="credit_history_none">— немає історії</string>
 
     <!-- Admin -->
     <string name="admin_stands">Стенди</string>
@@ -50,4 +92,34 @@
     <string name="admin_users">Користувачі</string>
     <string name="admin_coupons">Купони</string>
     <string name="admin_reports">Звіти</string>
+    <string name="admin_search_users">Пошук користувачів…</string>
+    <string name="admin_search_bikes">Пошук велосипедів…</string>
+    <string name="admin_stand_label">Стенд: %1$s</string>
+    <string name="admin_rent_time">Час оренди: %1$s</string>
+    <string name="admin_set_code">Встановити код</string>
+    <string name="admin_del_notes">Видалити нотатки</string>
+    <string name="admin_revert_bike_state">Скасувати стан велосипеда</string>
+    <string name="admin_set_lock_code">Встановити код замка</string>
+    <string name="admin_lock_code_hint">4-значний код</string>
+    <string name="admin_set">Встановити</string>
+    <string name="admin_rented_by">Орендовано: %1$s</string>
+    <string name="admin_note_label">Нотатка: %1$s</string>
+    <string name="admin_last_usage">Останнє використання</string>
+    <string name="admin_notes_label">Нотатки: %1$s</string>
+    <string name="admin_name">Ім\'я: %1$s</string>
+    <string name="admin_phone">Телефон: %1$s</string>
+    <string name="admin_email">Email: %1$s</string>
+    <string name="admin_city">Місто: %1$s</string>
+    <string name="admin_privileges">Права: %1$d</string>
+    <string name="admin_credit">Кредит: %1$s</string>
+    <string name="admin_limit">Ліміт: %1$d</string>
+    <string name="admin_multiplier">Множник</string>
+    <string name="admin_add">Додати</string>
+    <string name="admin_generate">Згенерувати</string>
+    <string name="admin_mark_sold">Позначити як продано</string>
+    <string name="admin_generate_coupons">Згенерувати купони</string>
+    <string name="admin_user_id">Користувач #%1$d</string>
+    <string name="admin_value">Номінал: %1$s</string>
+    <string name="admin_status">Статус: %1$s</string>
+    <string name="admin_code_label">Код: %1$s</string>
 </resources>

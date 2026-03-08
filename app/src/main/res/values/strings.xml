@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BikeShare</string>
+    <!-- app_name is set at build time from APP_NAME in gradle.properties -->
 
     <!-- Navigation -->
     <string name="nav_map">Map</string>
@@ -12,6 +12,29 @@
     <string name="login_phone_number">Phone number</string>
     <string name="login_password">Password</string>
     <string name="login_button">Sign in</string>
+    <string name="register_link">Create account</string>
+
+    <!-- Register -->
+    <string name="register_title">Register</string>
+    <string name="register_fullname">First and last name</string>
+    <string name="register_city">City</string>
+    <string name="register_city_hint">Select your city</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Password</string>
+    <string name="register_password_confirm">Confirm password</string>
+    <string name="register_phone">Phone number</string>
+    <string name="register_agree">I have read and agree with the terms and conditions</string>
+    <string name="register_button">Register</string>
+    <string name="register_success">Registration successful. Please check your email to complete registration.</string>
+    <string name="register_confirm_hint">Open the confirmation link from the email we sent you. After that you can sign in.</string>
+    <string name="back_to_login">Back to sign in</string>
+
+    <!-- Phone verification -->
+    <string name="phone_verify_title">Verify phone number</string>
+    <string name="phone_verify_description">A verification code will be sent to your phone. Enter it below to confirm your number.</string>
+    <string name="phone_verify_send_code">Send code</string>
+    <string name="phone_verify_code_hint">SMS code</string>
+    <string name="phone_verify_submit">Verify</string>
 
     <!-- Map -->
     <string name="bikes_available">bikes available</string>
@@ -19,6 +42,8 @@
     <string name="rent_button">Rent</string>
     <string name="qr_scan">Scan QR</string>
     <string name="qr_scan_instruction">Point the camera at a QR code on a bike or stand</string>
+    <string name="my_location">My location</string>
+    <string name="service_stand">Service</string>
 
     <!-- Rentals -->
     <string name="no_rented_bikes">You have no rented bikes</string>
@@ -43,6 +68,23 @@
     <string name="enter_coupon_code">Enter your coupon code</string>
     <string name="coupon_code">Coupon code</string>
     <string name="redeem_coupon">Redeem Coupon</string>
+    <string name="credit_history">Credit history</string>
+    <string name="recent_trips">Recent trips</string>
+    <string name="trip_bike_stand">Bike #%1$d → %2$s</string>
+    <string name="trip_from_to">Bike #%1$d: %2$s → %3$s</string>
+    <string name="trip_bike_no_return">Bike #%1$d (ongoing)</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_rental">Bike rental</string>
+    <string name="notification_free_time_title">Free time ending soon</string>
+    <string name="notification_free_time_text">Bike #%1$d: free rental period ends in 5 minutes.</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+
+    <!-- Trips / Credit empty state -->
+    <string name="trips_none">– none yet</string>
+    <string name="credit_history_none">– no history</string>
 
     <!-- Admin -->
     <string name="admin_stands">Stands</string>
@@ -50,4 +92,34 @@
     <string name="admin_users">Users</string>
     <string name="admin_coupons">Coupons</string>
     <string name="admin_reports">Reports</string>
+    <string name="admin_search_users">Search users…</string>
+    <string name="admin_search_bikes">Search bikes…</string>
+    <string name="admin_stand_label">Stand: %1$s</string>
+    <string name="admin_rent_time">Rent time: %1$s</string>
+    <string name="admin_set_code">Set Code</string>
+    <string name="admin_del_notes">Del Notes</string>
+    <string name="admin_revert_bike_state">Revert Bike State</string>
+    <string name="admin_set_lock_code">Set Lock Code</string>
+    <string name="admin_lock_code_hint">4-digit code</string>
+    <string name="admin_set">Set</string>
+    <string name="admin_rented_by">Rented by: %1$s</string>
+    <string name="admin_note_label">Note: %1$s</string>
+    <string name="admin_last_usage">Last Usage</string>
+    <string name="admin_notes_label">Notes: %1$s</string>
+    <string name="admin_name">Name: %1$s</string>
+    <string name="admin_phone">Phone: %1$s</string>
+    <string name="admin_email">Email: %1$s</string>
+    <string name="admin_city">City: %1$s</string>
+    <string name="admin_privileges">Privileges: %1$d</string>
+    <string name="admin_credit">Credit: %1$s</string>
+    <string name="admin_limit">Limit: %1$d</string>
+    <string name="admin_multiplier">Multiplier</string>
+    <string name="admin_add">Add</string>
+    <string name="admin_generate">Generate</string>
+    <string name="admin_mark_sold">Mark as sold</string>
+    <string name="admin_generate_coupons">Generate Coupons</string>
+    <string name="admin_user_id">User #%1$d</string>
+    <string name="admin_value">Value: %1$s</string>
+    <string name="admin_status">Status: %1$s</string>
+    <string name="admin_code_label">Code: %1$s</string>
 </resources>

@@ -73,4 +73,8 @@ class ProfileViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(loggedOut = true)
         }
     }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
+    }
 }
