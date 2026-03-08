@@ -2,9 +2,7 @@ package com.bikeshare.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import io.sentry.SentryLevel
 import io.sentry.android.core.SentryAndroid
-import io.sentry.android.timber.SentryTimberTree
 import timber.log.Timber
 
 @HiltAndroidApp
@@ -25,7 +23,6 @@ class BikeShareApp : Application() {
                 options.environment = if (BuildConfig.DEBUG) "development" else "production"
                 options.release = "${BuildConfig.APPLICATION_ID}@${BuildConfig.VERSION_NAME}"
             }
-            Timber.plant(SentryTimberTree(SentryLevel.ERROR, SentryLevel.WARNING))
         }
     }
 }
