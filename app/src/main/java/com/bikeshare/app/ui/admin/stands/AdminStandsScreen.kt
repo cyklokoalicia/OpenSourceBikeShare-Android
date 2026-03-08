@@ -51,25 +51,17 @@ fun AdminStandsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Place, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Column {
-                                        Text(stand.standName, style = MaterialTheme.typography.titleMedium)
-                                        stand.standDescription?.let {
-                                            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                        }
-                                        stand.note?.let {
-                                            Text("⚠ $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-                                        }
+                                Icon(Icons.Default.Place, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text(stand.standName, style = MaterialTheme.typography.titleMedium)
+                                    stand.standDescription?.let {
+                                        Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
-                                }
-                                stand.note?.let {
-                                    IconButton(onClick = { viewModel.deleteStandNotes(stand.standName) }) {
-                                        Icon(Icons.Default.DeleteSweep, contentDescription = "Delete notes", tint = MaterialTheme.colorScheme.error)
+                                    stand.placeName?.let {
+                                        Text(it, style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                             }

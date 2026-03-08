@@ -135,7 +135,7 @@ fun AdminBikeDetailScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Bike #${uiState.bike?.bikeNumber ?: ""}") },
+                title = { Text("Bike #${uiState.bike?.bikeNum ?: ""}") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -157,11 +157,14 @@ fun AdminBikeDetailScreen(
             uiState.bike?.let { bike ->
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Bike #${bike.bikeNumber}", style = MaterialTheme.typography.headlineMedium)
+                        Text("Bike #${bike.bikeNum}", style = MaterialTheme.typography.headlineMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        bike.currentStand?.let { Text("Stand: $it") }
-                        bike.currentUser?.let { Text("Rented by: $it", color = MaterialTheme.colorScheme.primary) }
-                        bike.note?.let { Text("Note: $it", color = MaterialTheme.colorScheme.error) }
+                        bike.standName?.let { Text("Stand: $it") }
+                        bike.userName?.let { Text("Rented by: $it", color = MaterialTheme.colorScheme.primary) }
+                        bike.rentTime?.let { Text("Rent time: $it") }
+                        bike.notes?.let {
+                            if (it.isNotBlank()) Text("Note: $it", color = MaterialTheme.colorScheme.error)
+                        }
                     }
                 }
 

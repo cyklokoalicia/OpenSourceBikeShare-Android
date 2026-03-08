@@ -3,6 +3,9 @@ package com.bikeshare.app.ui.admin.reports
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bikeshare.app.data.api.ApiService
+import com.bikeshare.app.data.api.dto.DailyReportDto
+import com.bikeshare.app.data.api.dto.InactiveBikeDto
+import com.bikeshare.app.data.api.dto.UserReportDto
 import com.bikeshare.app.util.NetworkResult
 import com.bikeshare.app.util.safeApiCall
 import com.squareup.moshi.Moshi
@@ -13,9 +16,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AdminReportsUiState(
-    val dailyReport: Any? = null,
-    val userReport: Any? = null,
-    val inactiveBikes: Any? = null,
+    val dailyReport: List<DailyReportDto>? = null,
+    val userReport: List<UserReportDto>? = null,
+    val inactiveBikes: List<InactiveBikeDto>? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

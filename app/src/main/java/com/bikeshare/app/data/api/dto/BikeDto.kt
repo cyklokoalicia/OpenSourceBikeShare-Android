@@ -5,10 +5,13 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class BikeDetailDto(
-    @Json(name = "bikeNumber") val bikeNumber: Int,
-    @Json(name = "currentUser") val currentUser: String? = null,
-    @Json(name = "currentStand") val currentStand: String? = null,
-    @Json(name = "note") val note: String? = null,
+    @Json(name = "bikeNum") val bikeNum: Int,
+    @Json(name = "userId") val userId: Int? = null,
+    @Json(name = "userName") val userName: String? = null,
+    @Json(name = "standName") val standName: String? = null,
+    @Json(name = "isServiceStand") val isServiceStand: Boolean? = null,
+    @Json(name = "notes") val notes: String? = null,
+    @Json(name = "rentTime") val rentTime: String? = null,
 )
 
 @JsonClass(generateAdapter = true)

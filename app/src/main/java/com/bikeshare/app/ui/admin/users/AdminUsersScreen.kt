@@ -59,9 +59,9 @@ fun AdminUsersScreen(
                                 Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
-                                    Text(user.userName ?: "User #${user.userId}", style = MaterialTheme.typography.titleMedium)
-                                    user.phone?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-                                    user.email?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                                    Text(user.username ?: "User #${user.userId}", style = MaterialTheme.typography.titleMedium)
+                                    user.number?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+                                    user.mail?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
                                     user.credit?.let { Text("Credit: $it", style = MaterialTheme.typography.bodySmall) }
                                 }
                             }

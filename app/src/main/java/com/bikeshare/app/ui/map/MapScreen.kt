@@ -1,5 +1,9 @@
 package com.bikeshare.app.ui.map
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -11,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bikeshare.app.R
@@ -19,6 +24,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,9 +38,21 @@ fun MapScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    // Configure osmdroid
+    // Location permission
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> hasLocationPermission = granted }
+
     LaunchedEffect(Unit) {
         Configuration.getInstance().userAgentValue = context.packageName
+        if (!hasLocationPermission) {
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -74,6 +93,14 @@ fun MapScreen(
                         setMultiTouchControls(true)
                         controller.setZoom(13.0)
                         controller.setCenter(GeoPoint(48.1486, 17.1077))
+
+                        // User location overlay
+                        if (hasLocationPermission) {
+                            val locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(ctx), this)
+                            locationOverlay.enableMyLocation()
+                            locationOverlay.enableFollowLocation()
+                            overlays.add(locationOverlay)
+                        }
                     }
                 },
                 update = { mapView ->

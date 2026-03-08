@@ -93,7 +93,7 @@ fun RentalScreen(
             stands = uiState.stands,
             onDismiss = { showReturnDialog = null },
             onConfirm = { standName, note ->
-                viewModel.returnBike(bike.bikeNumber, standName, note)
+                viewModel.returnBike(bike.bikeNum, standName, note)
                 showReturnDialog = null
             },
         )
@@ -120,7 +120,7 @@ private fun RentedBikeCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.bike_number, bike.bikeNumber),
+                        text = stringResource(R.string.bike_number, bike.bikeNum),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -131,7 +131,7 @@ private fun RentedBikeCard(
                 }
             }
 
-            bike.lockCode?.let { code ->
+            bike.currentCode?.let { code ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -147,9 +147,11 @@ private fun RentedBikeCard(
                 }
             }
 
-            bike.rentedAt?.let {
+            bike.rentedSeconds?.let { seconds ->
+                val hours = seconds / 3600
+                val minutes = (seconds % 3600) / 60
                 Text(
-                    text = stringResource(R.string.rented_at, it),
+                    text = stringResource(R.string.rented_duration, hours, minutes),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),
@@ -173,7 +175,7 @@ private fun ReturnBikeDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.return_bike_title, bike.bikeNumber)) },
+        title = { Text(stringResource(R.string.return_bike_title, bike.bikeNum)) },
         text = {
             Column {
                 ExposedDropdownMenuBox(

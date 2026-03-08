@@ -66,7 +66,7 @@ fun ProfileScreen(
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "${limits.credit ?: 0.0} ${limits.creditCurrency ?: ""}",
+                            text = "${limits.userCredit ?: 0.0}",
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -88,10 +88,11 @@ fun ProfileScreen(
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
+                        val remaining = (limits.limit ?: 0) - (limits.rented ?: 0)
                         Text(
                             text = stringResource(
                                 R.string.remaining_limit,
-                                limits.remaining ?: 0,
+                                remaining,
                                 limits.limit ?: 0,
                             ),
                             style = MaterialTheme.typography.bodyLarge,

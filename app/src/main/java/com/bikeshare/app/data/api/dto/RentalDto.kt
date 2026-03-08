@@ -17,10 +17,10 @@ data class ReturnRequest(
 
 @JsonClass(generateAdapter = true)
 data class RentedBikeDto(
-    @Json(name = "bikeNumber") val bikeNumber: Int,
-    @Json(name = "lockCode") val lockCode: String? = null,
-    @Json(name = "standName") val standName: String? = null,
-    @Json(name = "rentedAt") val rentedAt: String? = null,
+    @Json(name = "bikeNum") val bikeNum: Int,
+    @Json(name = "currentCode") val currentCode: String? = null,
+    @Json(name = "rentedSeconds") val rentedSeconds: Int? = null,
+    @Json(name = "oldCode") val oldCode: String? = null,
 )
 
 @JsonClass(generateAdapter = true)

@@ -70,7 +70,7 @@ fun StandBottomSheet(
                 modifier = Modifier.heightIn(max = 300.dp),
             ) {
                 items(bikes) { bike ->
-                    BikeItem(bike = bike, onRent = { onRentBike(bike.bikeNumber) })
+                    BikeItem(bike = bike, onRent = { onRentBike(bike.bikeNum) })
                 }
             }
         }
@@ -101,11 +101,11 @@ private fun BikeItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "#${bike.bikeNumber}",
+                        text = "#${bike.bikeNum}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
-                    bike.note?.let {
+                    bike.notes?.let {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.Warning,

@@ -25,6 +25,7 @@
     <string name="bike_number">Bike #%1$d</string>
     <string name="lock_code">Lock code: %1$s</string>
     <string name="rented_at">Rented at: %1$s</string>
+    <string name="rented_duration">Rented: %1$dh %2$dm</string>
     <string name="return_button">Return</string>
     <string name="return_bike_title">Return Bike #%1$d</string>
     <string name="select_stand">Select stand</string>

@@ -2,19 +2,21 @@ package com.bikeshare.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Green500 = Color(0xFF4CAF50)
-val Green700 = Color(0xFF388E3C)
-val Green900 = Color(0xFF1B5E20)
-val GreenLight = Color(0xFFC8E6C9)
+// Bootstrap-inspired palette matching the original web UI
+val Blue500 = Color(0xFF007BFF)  // Bootstrap primary
+val Blue700 = Color(0xFF0056B3)
+val Blue900 = Color(0xFF003D80)
+val BlueLight = Color(0xFFCCE5FF)
 
-val Blue500 = Color(0xFF2196F3)
-val Blue700 = Color(0xFF1976D2)
+val Green500 = Color(0xFF28A745)  // Bootstrap success
+val Green700 = Color(0xFF1E7E34)
 
-val Red500 = Color(0xFFF44336)
-val Orange500 = Color(0xFFFF9800)
+val Red500 = Color(0xFFDC3545)   // Bootstrap danger
+val Orange500 = Color(0xFFFFC107) // Bootstrap warning
 
 val Gray50 = Color(0xFFFAFAFA)
-val Gray100 = Color(0xFFF5F5F5)
-val Gray200 = Color(0xFFEEEEEE)
-val Gray800 = Color(0xFF424242)
-val Gray900 = Color(0xFF212121)
+val Gray100 = Color(0xFFF8F9FA)  // Bootstrap light
+val Gray200 = Color(0xFFE9ECEF)
+val Gray600 = Color(0xFF6C757D)  // Bootstrap secondary
+val Gray800 = Color(0xFF343A40)  // Bootstrap dark
+val Gray900 = Color(0xFF212529)

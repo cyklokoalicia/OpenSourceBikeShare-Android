@@ -25,6 +25,7 @@
     <string name="bike_number">Велосипед #%1$d</string>
     <string name="lock_code">Код замка: %1$s</string>
     <string name="rented_at">Орендовано: %1$s</string>
+    <string name="rented_duration">В оренді: %1$dг %2$dхв</string>
     <string name="return_button">Повернути</string>
     <string name="return_bike_title">Повернути велосипед #%1$d</string>
     <string name="select_stand">Виберіть стенд</string>

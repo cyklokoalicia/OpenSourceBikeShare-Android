@@ -19,6 +19,10 @@ class StandRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBikes(standName: String): NetworkResult<List<BikeOnStandDto>> {
-        return safeApiCall(moshi) { api.getStandBikes(standName) }
+        return when (val result = safeApiCall(moshi) { api.getStandBikes(standName) }) {
+            is NetworkResult.Success -> NetworkResult.Success(result.data.bikesOnStand)
+            is NetworkResult.Error -> result
+            is NetworkResult.Loading -> result
+        }
     }
 }

@@ -50,7 +50,7 @@ fun AdminBikesScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onBikeClick(bike.bikeNumber) },
+                                .clickable { onBikeClick(bike.bikeNum) },
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
@@ -59,15 +59,15 @@ fun AdminBikesScreen(
                                 Icon(Icons.Default.DirectionsBike, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
-                                    Text("#${bike.bikeNumber}", style = MaterialTheme.typography.titleMedium)
-                                    bike.currentStand?.let {
+                                    Text("#${bike.bikeNum}", style = MaterialTheme.typography.titleMedium)
+                                    bike.standName?.let {
                                         Text("Stand: $it", style = MaterialTheme.typography.bodySmall)
                                     }
-                                    bike.currentUser?.let {
+                                    bike.userName?.let {
                                         Text("User: $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                                     }
-                                    bike.note?.let {
-                                        Text("⚠ $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+                                    bike.notes?.let {
+                                        if (it.isNotBlank()) Text("⚠ $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             }

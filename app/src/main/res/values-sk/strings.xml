@@ -25,6 +25,7 @@
     <string name="bike_number">Bicykel #%1$d</string>
     <string name="lock_code">Kód zámku: %1$s</string>
     <string name="rented_at">Požičané: %1$s</string>
+    <string name="rented_duration">Požičané: %1$dh %2$dm</string>
     <string name="return_button">Vrátiť</string>
     <string name="return_bike_title">Vrátiť bicykel #%1$d</string>
     <string name="select_stand">Vyberte stojan</string>

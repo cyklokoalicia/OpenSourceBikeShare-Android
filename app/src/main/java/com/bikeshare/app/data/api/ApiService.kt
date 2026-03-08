@@ -23,7 +23,7 @@ interface ApiService {
     @GET("stands/{standName}/bikes")
     suspend fun getStandBikes(
         @Path("standName") standName: String,
-    ): Response<ApiEnvelope<List<BikeOnStandDto>>>
+    ): Response<ApiEnvelope<StandBikesResponse>>
 
     // ── Rentals ─────────────────────────────────────────────────────────
     @POST("rentals")
@@ -131,14 +131,14 @@ interface ApiService {
 
     // ── Admin: Reports ──────────────────────────────────────────────────
     @GET("admin/reports/daily")
-    suspend fun getDailyReport(): Response<ApiEnvelope<Any>>
+    suspend fun getDailyReport(): Response<ApiEnvelope<List<DailyReportDto>>>
 
     @GET("admin/reports/users")
-    suspend fun getUserReport(): Response<ApiEnvelope<Any>>
+    suspend fun getUserReport(): Response<ApiEnvelope<List<UserReportDto>>>
 
     @GET("admin/reports/users/{year}")
-    suspend fun getUserReportByYear(@Path("year") year: Int): Response<ApiEnvelope<Any>>
+    suspend fun getUserReportByYear(@Path("year") year: Int): Response<ApiEnvelope<List<UserReportDto>>>
 
     @GET("admin/reports/inactive-bikes")
-    suspend fun getInactiveBikesReport(): Response<ApiEnvelope<Any>>
+    suspend fun getInactiveBikesReport(): Response<ApiEnvelope<List<InactiveBikeDto>>>
 }

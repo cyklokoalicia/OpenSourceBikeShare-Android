@@ -16,17 +16,25 @@ data class StandMarkerDto(
 
 @JsonClass(generateAdapter = true)
 data class StandDetailDto(
+    @Json(name = "standId") val standId: Int? = null,
     @Json(name = "standName") val standName: String,
     @Json(name = "standDescription") val standDescription: String? = null,
     @Json(name = "standPhoto") val standPhoto: String? = null,
+    @Json(name = "serviceTag") val serviceTag: Int? = null,
+    @Json(name = "placeName") val placeName: String? = null,
     @Json(name = "latitude") val latitude: Double? = null,
     @Json(name = "longitude") val longitude: Double? = null,
-    @Json(name = "bikes") val bikes: List<BikeOnStandDto>? = null,
-    @Json(name = "note") val note: String? = null,
+)
+
+/** Wrapper for GET /stands/{standName}/bikes */
+@JsonClass(generateAdapter = true)
+data class StandBikesResponse(
+    @Json(name = "stackTopBike") val stackTopBike: Any? = null,
+    @Json(name = "bikesOnStand") val bikesOnStand: List<BikeOnStandDto> = emptyList(),
 )
 
 @JsonClass(generateAdapter = true)
 data class BikeOnStandDto(
-    @Json(name = "bikeNumber") val bikeNumber: Int,
-    @Json(name = "note") val note: String? = null,
+    @Json(name = "bikeNum") val bikeNum: Int,
+    @Json(name = "notes") val notes: String? = null,
 )

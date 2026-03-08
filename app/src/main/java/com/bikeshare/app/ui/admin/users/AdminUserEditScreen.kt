@@ -113,7 +113,7 @@ fun AdminUserEditScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(uiState.user?.userName ?: "User") },
+                title = { Text(uiState.user?.username ?: "User") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -137,13 +137,13 @@ fun AdminUserEditScreen(
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("User #${user.userId}", style = MaterialTheme.typography.headlineMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        user.userName?.let { Text("Name: $it") }
-                        user.phone?.let { Text("Phone: $it") }
-                        user.email?.let { Text("Email: $it") }
+                        user.username?.let { Text("Name: $it") }
+                        user.number?.let { Text("Phone: $it") }
+                        user.mail?.let { Text("Email: $it") }
                         user.city?.let { Text("City: $it") }
                         Text("Privileges: ${user.privileges ?: 0}")
                         user.credit?.let { Text("Credit: $it") }
-                        user.limit?.let { Text("Limit: $it") }
+                        user.userLimit?.let { Text("Limit: $it") }
                     }
                 }
 
