@@ -12,13 +12,18 @@ import javax.inject.Singleton
 class TokenStorage @Inject constructor(
     @ApplicationContext context: Context,
 ) {
-    private val prefs: SharedPreferences = EncryptedSharedPreferences.create(
-        "bikeshare_secure_prefs",
-        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-        context,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
-    )
+    private val prefs: SharedPreferences = try {
+        EncryptedSharedPreferences.create(
+            "bikeshare_secure_prefs",
+            MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+        )
+    } catch (e: Exception) {
+        // Fallback to regular SharedPreferences if encrypted storage fails
+        context.getSharedPreferences("bikeshare_prefs", Context.MODE_PRIVATE)
+    }
 
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
