@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_name from build config (APP_NAME in gradle.properties) -->
+
+    <!-- Navigation -->
+    <string name="nav_map">Mapa</string>
+    <string name="nav_rentals">Prenájmy</string>
+    <string name="nav_profile">Profil</string>
+    <string name="nav_admin">Admin</string>
+
+    <!-- Login -->
+    <string name="login_phone_number">Telefónne číslo</string>
+    <string name="login_password">Heslo</string>
+    <string name="login_button">Prihlásiť sa</string>
+    <string name="register_link">Vytvoriť účet</string>
+
+    <!-- Register -->
+    <string name="register_title">Registrácia</string>
+    <string name="register_fullname">Meno a priezvisko</string>
+    <string name="register_city">Mesto</string>
+    <string name="register_city_hint">Vyberte mesto</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Heslo</string>
+    <string name="register_password_confirm">Potvrďte heslo</string>
+    <string name="register_phone">Telefónne číslo</string>
+    <string name="register_agree">Prečítal som si a súhlasím s podmienkami používania</string>
+    <string name="register_button">Registrovať sa</string>
+    <string name="register_success">Registrácia úspešná. Skontrolujte email a dokončite registráciu.</string>
+    <string name="register_confirm_hint">Otvorite odkaz na potvrdenie z e-mailu, ktorý sme vám poslali. Potom sa budete môcť prihlásiť.</string>
+    <string name="back_to_login">Späť na prihlásenie</string>
+
+    <!-- Phone verification -->
+    <string name="phone_verify_title">Overiť telefónne číslo</string>
+    <string name="phone_verify_description">Overovací kód bude odoslaný na váš telefón. Zadajte ho nižšie.</string>
+    <string name="phone_verify_send_code">Odoslať kód</string>
+    <string name="phone_verify_code_hint">SMS kód</string>
+    <string name="phone_verify_submit">Overiť</string>
+
+    <!-- Map -->
+    <string name="bikes_available">bicyklov dostupných</string>
+    <string name="no_bikes_available">Na tomto stojane nie sú žiadne bicykle</string>
+    <string name="rent_button">Požičať</string>
+    <string name="qr_scan">Skenovať QR</string>
+    <string name="qr_scan_instruction">Namierte kameru na QR kód na bicykli alebo stojane</string>
+    <string name="my_location">Moja poloha</string>
+    <string name="service_stand">Servis</string>
+
+    <!-- Rentals -->
+    <string name="no_rented_bikes">Nemáte žiadne požičané bicykle</string>
+    <string name="bike_number">Bicykel #%1$d</string>
+    <string name="lock_code">Kód zámku: %1$s</string>
+    <string name="rented_at">Požičané: %1$s</string>
+    <string name="rented_duration">Požičané: %1$dh %2$dm</string>
+    <string name="return_button">Vrátiť</string>
+    <string name="return_bike_title">Vrátiť bicykel #%1$d</string>
+    <string name="select_stand">Vyberte stojan</string>
+    <string name="note_optional">Poznámka (voliteľné)</string>
+    <string name="cancel">Zrušiť</string>
+
+    <!-- Profile -->
+    <string name="credit_balance">Zostatok kreditu</string>
+    <string name="rental_limits">Limity prenájmu</string>
+    <string name="remaining_limit">%1$d / %2$d zostáva</string>
+    <string name="add_credit">Pridať kredit</string>
+    <string name="logout">Odhlásiť sa</string>
+
+    <!-- Credit -->
+    <string name="enter_coupon_code">Zadajte kód kupónu</string>
+    <string name="coupon_code">Kód kupónu</string>
+    <string name="redeem_coupon">Uplatniť kupón</string>
+    <string name="credit_history">História kreditu</string>
+    <string name="recent_trips">Nedávne cesty</string>
+    <string name="trip_bike_stand">Bicykel #%1$d → %2$s</string>
+    <string name="trip_from_to">Bicykel #%1$d: %2$s → %3$s</string>
+    <string name="trip_bike_no_return">Bicykel #%1$d (prebieha)</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_rental">Prenájom bicykla</string>
+    <string name="notification_free_time_title">Čoskoro koniec bezplatného času</string>
+    <string name="notification_free_time_text">Bicykel #%1$d: bezplatný prenájom končí o 5 minút.</string>
+
+    <!-- Common -->
+    <string name="ok">OK</string>
+
+    <!-- Trips / Credit empty state -->
+    <string name="trips_none">– zatiaľ žiadne</string>
+    <string name="credit_history_none">– žiadna história</string>
+
+    <!-- Admin -->
+    <string name="admin_stands">Stojany</string>
+    <string name="admin_bikes">Bicykle</string>
+    <string name="admin_users">Používatelia</string>
+    <string name="admin_coupons">Kupóny</string>
+    <string name="admin_reports">Správy</string>
+    <string name="admin_search_users">Hľadať používateľov…</string>
+    <string name="admin_search_bikes">Hľadať bicykle…</string>
+    <string name="admin_stand_label">Stojan: %1$s</string>
+    <string name="admin_rent_time">Čas prenájmu: %1$s</string>
+    <string name="admin_set_code">Nastaviť kód</string>
+    <string name="admin_del_notes">Zmazať poznámky</string>
+    <string name="admin_revert_bike_state">Vrátiť stav bicykla</string>
+    <string name="admin_set_lock_code">Nastaviť kód zámku</string>
+    <string name="admin_lock_code_hint">4-miestny kód</string>
+    <string name="admin_set">Nastaviť</string>
+    <string name="admin_rented_by">Požičané: %1$s</string>
+    <string name="admin_note_label">Poznámka: %1$s</string>
+    <string name="admin_last_usage">Posledné použitie</string>
+    <string name="admin_notes_label">Poznámky: %1$s</string>
+    <string name="admin_name">Meno: %1$s</string>
+    <string name="admin_phone">Telefón: %1$s</string>
+    <string name="admin_email">Email: %1$s</string>
+    <string name="admin_city">Mesto: %1$s</string>
+    <string name="admin_privileges">Práva: %1$d</string>
+    <string name="admin_credit">Kredit: %1$s</string>
+    <string name="admin_limit">Limit: %1$d</string>
+    <string name="admin_multiplier">Multiplikátor</string>
+    <string name="admin_add">Pridať</string>
+    <string name="admin_generate">Generovať</string>
+    <string name="admin_mark_sold">Označiť ako predané</string>
+    <string name="admin_generate_coupons">Generovať kupóny</string>
+    <string name="admin_user_id">Používateľ #%1$d</string>
+    <string name="admin_value">Hodnota: %1$s</string>
+    <string name="admin_status">Stav: %1$s</string>
+    <string name="admin_code_label">Kód: %1$s</string>
+</resources>
