@@ -5,7 +5,7 @@ import com.bikeshare.app.data.api.ApiService
 import com.bikeshare.app.data.api.AuthInterceptor
 import com.bikeshare.app.data.api.TokenRefreshAuthenticator
 import com.squareup.moshi.Moshi
-import io.sentry.android.okhttp.SentryOkHttpInterceptor
+import io.sentry.okhttp.SentryOkHttpInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
