@@ -86,9 +86,8 @@ dependencies {
     implementation(libs.moshi)
     ksp(libs.moshi.kotlin)
 
-    // Maps
-    implementation(libs.maps.compose)
-    implementation(libs.play.services.maps)
+    // Maps (OpenStreetMap)
+    implementation(libs.osmdroid)
     implementation(libs.play.services.location)
 
     // Camera & QR

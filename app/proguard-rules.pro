@@ -18,3 +18,6 @@
 
 # Keep data classes for serialization
 -keep class com.bikeshare.app.domain.model.** { *; }
+
+# osmdroid
+-dontwarn org.osmdroid.**
