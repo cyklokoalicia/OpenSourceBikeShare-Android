@@ -31,7 +31,7 @@ android {
         buildConfigField("String", "LOGO_URL", "\"$logoUrl\"")
         buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
 
-        resValue("string", "app_name", "\"$appName\"")
+        resValue("string", "app_name", appName)
     }
 
     buildTypes {
