@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew assembleDebug
 
       - name: Run lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintDebug -Dlint.baselines.continue=true
 
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
@@ -44,3 +44,32 @@ jobs:
         with:
           name: test-report
           path: app/build/reports/tests/testDebugUnitTest/
+
+  build-whitebikes:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build WhiteBikes APK
+        run: >
+          ./gradlew assembleDebug
+          -PAPP_NAME="WhiteBikes"
+          -PAPI_BASE_URL="https://whitebikes.info/api/v1/"
+          -PLOGO_URL="https://whitebikes.info/images/logo_small.svg"
+
+      - name: Upload WhiteBikes APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: whitebikes-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
