@@ -140,11 +140,10 @@ fun AppNavGraph(
                 )
             }
 
-            composable(Screen.Map.route) {
-                val mapBackStackEntry = remember { navController.getBackStackEntry(Screen.Map.route) }
+            composable(Screen.Map.route) { backStackEntry ->
                 MapScreen(
                     onScanQr = { navController.navigate(Screen.QrScanner.route) },
-                    qrSavedStateHandle = mapBackStackEntry.savedStateHandle,
+                    qrSavedStateHandle = backStackEntry.savedStateHandle,
                 )
             }
 

@@ -38,7 +38,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.camera.core.ExperimentalGetImage::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrScannerScreen(
     onBack: () -> Unit,
@@ -189,7 +189,7 @@ private fun ScanOverlay() {
     }
 }
 
-@androidx.camera.core.ExperimentalGetImage
+@androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
 private fun processImage(
     imageProxy: ImageProxy,
     scanner: com.google.mlkit.vision.barcode.BarcodeScanner,
