@@ -24,9 +24,12 @@ android {
         val logoUrl = (project.findProperty("LOGO_URL") as? String)?.takeIf { it.isNotBlank() } ?: "https://whitebikes.info/images/logo_small.svg"
         val apiBaseUrl = (project.findProperty("API_BASE_URL") as? String)?.takeIf { it.isNotBlank() } ?: "https://whitebikes.info/api/v1/"
 
+        val sentryDsn = (project.findProperty("SENTRY_DSN") as? String)?.takeIf { it.isNotBlank() } ?: ""
+
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
         buildConfigField("String", "APP_NAME", "\"$appName\"")
         buildConfigField("String", "LOGO_URL", "\"$logoUrl\"")
+        buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
 
         resValue("string", "app_name", "\"$appName\"")
     }
@@ -119,8 +122,12 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
 
-    // Logging
+    // Logging & Monitoring
     implementation(libs.timber)
+    implementation(libs.sentry.android)
+    implementation(libs.sentry.timber)
+    implementation(libs.sentry.okhttp)
+    implementation(libs.sentry.compose)
 
     // Coroutines
     implementation(libs.coroutines.android)

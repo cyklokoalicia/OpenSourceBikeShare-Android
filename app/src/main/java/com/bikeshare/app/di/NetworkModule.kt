@@ -5,6 +5,7 @@ import com.bikeshare.app.data.api.ApiService
 import com.bikeshare.app.data.api.AuthInterceptor
 import com.bikeshare.app.data.api.TokenRefreshAuthenticator
 import com.squareup.moshi.Moshi
+import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,10 @@ object NetworkModule {
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+
+        if (BuildConfig.SENTRY_DSN.isNotBlank()) {
+            builder.addInterceptor(SentryOkHttpInterceptor())
+        }
 
         if (BuildConfig.DEBUG) {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
