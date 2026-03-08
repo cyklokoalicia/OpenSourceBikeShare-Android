@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BikeShare</string>
+
+    <!-- Navigation -->
+    <string name="nav_map">Map</string>
+    <string name="nav_rentals">Rentals</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_admin">Admin</string>
+
+    <!-- Login -->
+    <string name="login_phone_number">Phone number</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Sign in</string>
+
+    <!-- Map -->
+    <string name="bikes_available">bikes available</string>
+    <string name="no_bikes_available">No bikes available at this stand</string>
+    <string name="rent_button">Rent</string>
+    <string name="qr_scan">Scan QR</string>
+    <string name="qr_scan_instruction">Point the camera at a QR code on a bike or stand</string>
+
+    <!-- Rentals -->
+    <string name="no_rented_bikes">You have no rented bikes</string>
+    <string name="bike_number">Bike #%1$d</string>
+    <string name="lock_code">Lock code: %1$s</string>
+    <string name="rented_at">Rented at: %1$s</string>
+    <string name="return_button">Return</string>
+    <string name="return_bike_title">Return Bike #%1$d</string>
+    <string name="select_stand">Select stand</string>
+    <string name="note_optional">Note (optional)</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Profile -->
+    <string name="credit_balance">Credit Balance</string>
+    <string name="rental_limits">Rental Limits</string>
+    <string name="remaining_limit">%1$d / %2$d remaining</string>
+    <string name="add_credit">Add Credit</string>
+    <string name="logout">Logout</string>
+
+    <!-- Credit -->
+    <string name="enter_coupon_code">Enter your coupon code</string>
+    <string name="coupon_code">Coupon code</string>
+    <string name="redeem_coupon">Redeem Coupon</string>
+
+    <!-- Admin -->
+    <string name="admin_stands">Stands</string>
+    <string name="admin_bikes">Bikes</string>
+    <string name="admin_users">Users</string>
+    <string name="admin_coupons">Coupons</string>
+    <string name="admin_reports">Reports</string>
+</resources>

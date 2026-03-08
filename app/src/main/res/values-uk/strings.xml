@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BikeShare</string>
+
+    <!-- Navigation -->
+    <string name="nav_map">Карта</string>
+    <string name="nav_rentals">Оренда</string>
+    <string name="nav_profile">Профіль</string>
+    <string name="nav_admin">Адмін</string>
+
+    <!-- Login -->
+    <string name="login_phone_number">Номер телефону</string>
+    <string name="login_password">Пароль</string>
+    <string name="login_button">Увійти</string>
+
+    <!-- Map -->
+    <string name="bikes_available">велосипедів доступно</string>
+    <string name="no_bikes_available">На цьому стенді немає велосипедів</string>
+    <string name="rent_button">Орендувати</string>
+    <string name="qr_scan">Сканувати QR</string>
+    <string name="qr_scan_instruction">Наведіть камеру на QR-код на велосипеді або стенді</string>
+
+    <!-- Rentals -->
+    <string name="no_rented_bikes">У вас немає орендованих велосипедів</string>
+    <string name="bike_number">Велосипед #%1$d</string>
+    <string name="lock_code">Код замка: %1$s</string>
+    <string name="rented_at">Орендовано: %1$s</string>
+    <string name="return_button">Повернути</string>
+    <string name="return_bike_title">Повернути велосипед #%1$d</string>
+    <string name="select_stand">Виберіть стенд</string>
+    <string name="note_optional">Нотатка (необов\'язково)</string>
+    <string name="cancel">Скасувати</string>
+
+    <!-- Profile -->
+    <string name="credit_balance">Баланс кредитів</string>
+    <string name="rental_limits">Ліміти оренди</string>
+    <string name="remaining_limit">%1$d / %2$d залишилось</string>
+    <string name="add_credit">Додати кредит</string>
+    <string name="logout">Вийти</string>
+
+    <!-- Credit -->
+    <string name="enter_coupon_code">Введіть код купона</string>
+    <string name="coupon_code">Код купона</string>
+    <string name="redeem_coupon">Активувати купон</string>
+
+    <!-- Admin -->
+    <string name="admin_stands">Стенди</string>
+    <string name="admin_bikes">Велосипеди</string>
+    <string name="admin_users">Користувачі</string>
+    <string name="admin_coupons">Купони</string>
+    <string name="admin_reports">Звіти</string>
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BikeShare</string>
+
+    <!-- Navigation -->
+    <string name="nav_map">Mapa</string>
+    <string name="nav_rentals">Prenájmy</string>
+    <string name="nav_profile">Profil</string>
+    <string name="nav_admin">Admin</string>
+
+    <!-- Login -->
+    <string name="login_phone_number">Telefónne číslo</string>
+    <string name="login_password">Heslo</string>
+    <string name="login_button">Prihlásiť sa</string>
+
+    <!-- Map -->
+    <string name="bikes_available">bicyklov dostupných</string>
+    <string name="no_bikes_available">Na tomto stojane nie sú žiadne bicykle</string>
+    <string name="rent_button">Požičať</string>
+    <string name="qr_scan">Skenovať QR</string>
+    <string name="qr_scan_instruction">Namierte kameru na QR kód na bicykli alebo stojane</string>
+
+    <!-- Rentals -->
+    <string name="no_rented_bikes">Nemáte žiadne požičané bicykle</string>
+    <string name="bike_number">Bicykel #%1$d</string>
+    <string name="lock_code">Kód zámku: %1$s</string>
+    <string name="rented_at">Požičané: %1$s</string>
+    <string name="return_button">Vrátiť</string>
+    <string name="return_bike_title">Vrátiť bicykel #%1$d</string>
+    <string name="select_stand">Vyberte stojan</string>
+    <string name="note_optional">Poznámka (voliteľné)</string>
+    <string name="cancel">Zrušiť</string>
+
+    <!-- Profile -->
+    <string name="credit_balance">Zostatok kreditu</string>
+    <string name="rental_limits">Limity prenájmu</string>
+    <string name="remaining_limit">%1$d / %2$d zostáva</string>
+    <string name="add_credit">Pridať kredit</string>
+    <string name="logout">Odhlásiť sa</string>
+
+    <!-- Credit -->
+    <string name="enter_coupon_code">Zadajte kód kupónu</string>
+    <string name="coupon_code">Kód kupónu</string>
+    <string name="redeem_coupon">Uplatniť kupón</string>
+
+    <!-- Admin -->
+    <string name="admin_stands">Stojany</string>
+    <string name="admin_bikes">Bicykle</string>
+    <string name="admin_users">Používatelia</string>
+    <string name="admin_coupons">Kupóny</string>
+    <string name="admin_reports">Správy</string>
+</resources>
