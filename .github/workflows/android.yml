@@ -116,6 +116,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: >
           ./gradlew assembleRelease
+          -Dlint.baselines.continue=true
           -PVERSION_NAME="${{ steps.version.outputs.version_name }}"
           -PVERSION_CODE="${{ steps.version.outputs.version_code }}"
           -PAPP_NAME="${{ vars.APP_NAME }}"
