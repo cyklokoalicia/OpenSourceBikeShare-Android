@@ -26,7 +26,7 @@ class TokenStorage @Inject constructor(
         private const val KEY_PHONE_CONFIRMED = "phone_confirmed"
     }
 
-    suspend fun saveTokens(
+    fun saveTokens(
         accessToken: String,
         refreshToken: String,
         phoneConfirmed: Boolean = true,
@@ -38,17 +38,17 @@ class TokenStorage @Inject constructor(
             .apply()
     }
 
-    suspend fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
+    fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
 
-    suspend fun getRefreshToken(): String? = prefs.getString(KEY_REFRESH_TOKEN, null)
+    fun getRefreshToken(): String? = prefs.getString(KEY_REFRESH_TOKEN, null)
 
-    suspend fun getPhoneConfirmed(): Boolean = prefs.getBoolean(KEY_PHONE_CONFIRMED, true)
+    fun getPhoneConfirmed(): Boolean = prefs.getBoolean(KEY_PHONE_CONFIRMED, true)
 
-    suspend fun setPhoneConfirmed(confirmed: Boolean) {
+    fun setPhoneConfirmed(confirmed: Boolean) {
         prefs.edit().putBoolean(KEY_PHONE_CONFIRMED, confirmed).apply()
     }
 
-    suspend fun clearTokens() {
+    fun clearTokens() {
         prefs.edit()
             .remove(KEY_ACCESS_TOKEN)
             .remove(KEY_REFRESH_TOKEN)
@@ -56,5 +56,5 @@ class TokenStorage @Inject constructor(
             .apply()
     }
 
-    suspend fun hasTokens(): Boolean = getAccessToken() != null
+    fun hasTokens(): Boolean = getAccessToken() != null
 }

@@ -213,7 +213,8 @@ fun MapScreen(
         }
 
         // Stand detail bottom sheet
-        if (showBottomSheet && uiState.selectedStand != null) {
+        val selectedStand = uiState.selectedStand
+        if (showBottomSheet && selectedStand != null) {
             ModalBottomSheet(
                 onDismissRequest = {
                     showBottomSheet = false
@@ -222,7 +223,7 @@ fun MapScreen(
                 sheetState = sheetState,
             ) {
                 StandBottomSheet(
-                    stand = uiState.selectedStand!!,
+                    stand = selectedStand,
                     bikes = uiState.standBikes,
                     myBikes = uiState.myBikes,
                     onRentBike = { bikeNumber ->
@@ -230,7 +231,7 @@ fun MapScreen(
                         showBottomSheet = false
                     },
                     onReturnBike = { bikeNumber ->
-                        viewModel.returnBike(bikeNumber, uiState.selectedStand!!.standName)
+                        viewModel.returnBike(bikeNumber, selectedStand.standName)
                         showBottomSheet = false
                     },
                 )

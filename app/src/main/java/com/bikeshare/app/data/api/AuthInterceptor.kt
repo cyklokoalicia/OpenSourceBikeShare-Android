@@ -1,7 +1,6 @@
 package com.bikeshare.app.data.api
 
 import com.bikeshare.app.data.local.TokenStorage
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -24,7 +23,7 @@ class AuthInterceptor @Inject constructor(
             return chain.proceed(request)
         }
 
-        val token = runBlocking { tokenStorage.getAccessToken() }
+        val token = tokenStorage.getAccessToken()
 
         val authenticatedRequest = if (token != null) {
             request.newBuilder()

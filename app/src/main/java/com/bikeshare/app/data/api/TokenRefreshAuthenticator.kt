@@ -6,9 +6,6 @@ import com.bikeshare.app.data.api.dto.RefreshRequest
 import com.bikeshare.app.data.local.TokenStorage
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import okhttp3.Authenticator
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -24,32 +21,29 @@ class TokenRefreshAuthenticator @Inject constructor(
     private val moshi: Moshi,
 ) : Authenticator {
 
-    private val mutex = Mutex()
+    private val refreshClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
 
+    @Synchronized
     override fun authenticate(route: Route?, response: Response): Request? {
         // Only retry once
         if (response.request.header("X-Retry") != null) return null
 
-        return runBlocking {
-            mutex.withLock {
-                val refreshToken = tokenStorage.getRefreshToken() ?: return@runBlocking null
+        val refreshToken = tokenStorage.getRefreshToken() ?: return null
 
-                val newTokens = refreshAccessToken(refreshToken, response.request)
-                if (newTokens != null) {
-                    tokenStorage.saveTokens(
-                        newTokens.accessToken,
-                        newTokens.refreshToken,
-                        newTokens.phoneConfirmed != false,
-                    )
-                    response.request.newBuilder()
-                        .header("Authorization", "Bearer ${newTokens.accessToken}")
-                        .header("X-Retry", "true")
-                        .build()
-                } else {
-                    tokenStorage.clearTokens()
-                    null
-                }
-            }
+        val newTokens = refreshAccessToken(refreshToken, response.request)
+        return if (newTokens != null) {
+            tokenStorage.saveTokens(
+                newTokens.accessToken,
+                newTokens.refreshToken,
+                newTokens.phoneConfirmed != false,
+            )
+            response.request.newBuilder()
+                .header("Authorization", "Bearer ${newTokens.accessToken}")
+                .header("X-Retry", "true")
+                .build()
+        } else {
+            tokenStorage.clearTokens()
+            null
         }
     }
 
@@ -67,8 +61,7 @@ class TokenRefreshAuthenticator @Inject constructor(
                 .post(refreshBody.toRequestBody("application/json".toMediaType()))
                 .build()
 
-            val client = OkHttpClient.Builder().build()
-            val response = client.newCall(request).execute()
+            val response = refreshClient.newCall(request).execute()
 
             if (response.isSuccessful) {
                 val type = Types.newParameterizedType(

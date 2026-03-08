@@ -12,6 +12,7 @@ import com.bikeshare.app.domain.repository.StandRepository
 import com.bikeshare.app.util.NetworkResult
 import com.bikeshare.app.util.buildReturnDisplayMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -81,7 +82,7 @@ class MapViewModel @Inject constructor(
                 is NetworkResult.Success -> {
                     _uiState.value = _uiState.value.copy(myBikes = result.data)
                 }
-                is NetworkResult.Error -> {}
+                is NetworkResult.Error -> Timber.w("Failed to load my bikes: ${result.message}")
                 is NetworkResult.Loading -> {}
             }
         }
@@ -93,7 +94,7 @@ class MapViewModel @Inject constructor(
                 is NetworkResult.Success -> {
                     _uiState.value = _uiState.value.copy(limits = result.data)
                 }
-                is NetworkResult.Error -> {}
+                is NetworkResult.Error -> Timber.w("Failed to load limits: ${result.message}")
                 is NetworkResult.Loading -> {}
             }
         }

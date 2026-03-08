@@ -229,8 +229,9 @@ fun AdminBikeDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(stringResource(R.string.admin_last_usage), style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(8.dp))
-                    if (usage.notes?.isNotBlank() == true) {
-                        Text(stringResource(R.string.admin_notes_label, usage.notes!!), color = MaterialTheme.colorScheme.error)
+                    val notes = usage.notes
+                    if (notes?.isNotBlank() == true) {
+                        Text(stringResource(R.string.admin_notes_label, notes), color = MaterialTheme.colorScheme.error)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     usage.history.forEach { item ->
