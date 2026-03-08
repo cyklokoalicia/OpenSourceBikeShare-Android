@@ -83,7 +83,7 @@ coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 sentry-android = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
 sentry-timber = { group = "io.sentry", name = "sentry-android-timber", version.ref = "sentry" }
-sentry-okhttp = { group = "io.sentry", name = "sentry-android-okhttp", version.ref = "sentry" }
+sentry-okhttp = { group = "io.sentry", name = "sentry-okhttp", version.ref = "sentry" }
 sentry-compose = { group = "io.sentry", name = "sentry-compose-android", version.ref = "sentry" }
 
 # Coroutines
