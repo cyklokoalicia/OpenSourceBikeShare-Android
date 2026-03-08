@@ -64,9 +64,10 @@ jobs:
       - name: Build WhiteBikes APK
         run: >
           ./gradlew assembleDebug
-          -PAPP_NAME="WhiteBikes"
-          -PAPI_BASE_URL="https://whitebikes.info/api/v1/"
-          -PLOGO_URL="https://whitebikes.info/images/logo_small.svg"
+          -PAPP_NAME="${{ vars.APP_NAME }}"
+          -PAPI_BASE_URL="${{ vars.API_BASE_URL }}"
+          -PLOGO_URL="${{ vars.LOGO_URL }}"
+          -PSENTRY_DSN="${{ secrets.SENTRY_DSN }}"
 
       - name: Upload WhiteBikes APK
         uses: actions/upload-artifact@v4
