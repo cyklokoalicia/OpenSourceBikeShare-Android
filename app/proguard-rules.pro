@@ -21,3 +21,9 @@
 
 # osmdroid
 -dontwarn org.osmdroid.**
+
+# EncryptedSharedPreferences / Security Crypto
+-keep class androidx.security.crypto.** { *; }
+
+# Sentry
+-dontwarn io.sentry.**

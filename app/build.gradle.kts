@@ -10,12 +10,15 @@ android {
     namespace = "com.bikeshare.app"
     compileSdk = 35
 
+    val tagVersion = (project.findProperty("VERSION_NAME") as? String)?.takeIf { it.isNotBlank() } ?: "1.0.0"
+    val commitCount = (project.findProperty("VERSION_CODE") as? String)?.toIntOrNull() ?: 1
+
     defaultConfig {
         applicationId = "com.bikeshare.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = commitCount
+        versionName = tagVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -34,6 +37,18 @@ android {
         resValue("string", "app_name", appName)
     }
 
+    signingConfigs {
+        create("release") {
+            val ksFile = file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
+            if (ksFile.exists()) {
+                storeFile = ksFile
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("KEY_ALIAS") ?: ""
+                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -42,6 +57,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.findByName("release")
         }
         debug {
             isMinifyEnabled = false

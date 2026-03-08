@@ -3,6 +3,7 @@ name: Android CI
 on:
   push:
     branches: [ master ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ master ]
 
@@ -74,3 +75,77 @@ jobs:
         with:
           name: whitebikes-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          VERSION_CODE=$(git rev-list --count HEAD)
+          echo "version_name=$TAG" >> $GITHUB_OUTPUT
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ runner.temp }}/release.keystore
+
+      - name: Build signed release APK
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: >
+          ./gradlew assembleRelease
+          -PVERSION_NAME="${{ steps.version.outputs.version_name }}"
+          -PVERSION_CODE="${{ steps.version.outputs.version_code }}"
+          -PAPP_NAME="${{ vars.APP_NAME }}"
+          -PAPI_BASE_URL="${{ vars.API_BASE_URL }}"
+          -PLOGO_URL="${{ vars.LOGO_URL }}"
+          -PSENTRY_DSN="${{ secrets.SENTRY_DSN }}"
+
+      - name: Rename APK
+        run: |
+          mv app/build/outputs/apk/release/app-release.apk \
+             app/build/outputs/apk/release/WhiteBikes-${{ steps.version.outputs.version_name }}.apk
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            LOG=$(git log --pretty=format:"- %s" "$PREV_TAG"..HEAD)
+          else
+            LOG=$(git log --pretty=format:"- %s" -20)
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: WhiteBikes v${{ steps.version.outputs.version_name }}
+          body: |
+            ## Changes
+            ${{ steps.changelog.outputs.changelog }}
+          files: app/build/outputs/apk/release/WhiteBikes-${{ steps.version.outputs.version_name }}.apk
