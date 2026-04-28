@@ -155,6 +155,7 @@
     <plurals name="api_bike_rent_error_limit">
         <item quantity="one">Môžete si naraz požičať len %d bicykel.</item>
         <item quantity="few">Môžete si naraz požičať len %d bicykle.</item>
+        <item quantity="many">Môžete si naraz požičať len %d bicykla.</item>
         <item quantity="other">Môžete si naraz požičať len %d bicyklov.</item>
     </plurals>
 
