@@ -247,7 +247,7 @@ class RentMessageRendererTest {
 
     @Test
     fun `typed RentSystemParamsDto delegates to map-based render`() {
-        val result = renderer.render(
+        val result = renderer.renderFromDto(
             code = "bike.rent.success",
             params = RentSystemParamsDto(
                 bikeNumber = 3,

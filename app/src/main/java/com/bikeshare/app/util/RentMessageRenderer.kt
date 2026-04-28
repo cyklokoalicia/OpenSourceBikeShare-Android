@@ -71,7 +71,7 @@ class RentMessageRenderer @Inject constructor(
         }
     }
 
-    fun render(code: String?, params: RentSystemParamsDto?, fallback: String? = null): String =
+    fun renderFromDto(code: String?, params: RentSystemParamsDto?, fallback: String? = null): String =
         render(code, params?.toParamsMap(), fallback)
 
     private fun renderRentSuccess(p: Map<String, Any?>): String {

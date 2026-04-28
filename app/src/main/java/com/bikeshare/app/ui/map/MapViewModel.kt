@@ -128,7 +128,7 @@ class MapViewModel @Inject constructor(
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         rentCodeInfo = result.data,
-                        rentCodeMessage = messageRenderer.render(
+                        rentCodeMessage = messageRenderer.renderFromDto(
                             result.data.code,
                             result.data.params,
                             fallback = result.data.message,
@@ -162,7 +162,7 @@ class MapViewModel @Inject constructor(
                     FreeTimeNotificationScheduler.cancelForBike(appContext, bikeNumber)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        returnResult = messageRenderer.render(
+                        returnResult = messageRenderer.renderFromDto(
                             result.data.code,
                             result.data.params,
                             fallback = result.data.message,
