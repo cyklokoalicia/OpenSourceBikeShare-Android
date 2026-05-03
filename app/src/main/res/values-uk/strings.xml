@@ -136,6 +136,8 @@
     <string name="admin_coupon_copied">Купон скопійовано</string>
     <string name="about_checking_update">Перевірка оновлень…</string>
     <string name="about_up_to_date">У вас остання версія</string>
+    <string name="about_check_failed">Не вдалося перевірити оновлення. Перевірте з\'єднання та спробуйте ще раз.</string>
+    <string name="about_retry_check">Повторити</string>
 
     <!-- API messages from server (rent/return/revert flows). Names mirror server translation codes. -->
     <string name="api_bike_rent_success">Велосипед №%1$d: відкрити кодом %2$s. Негайно змініть код на %3$s (відкрити, повернути металеву частину, встановити новий код, повернути металеву частину назад).</string>

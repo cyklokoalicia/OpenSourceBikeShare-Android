@@ -2,6 +2,7 @@ package com.bikeshare.app.ui.about
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bikeshare.app.domain.update.UpdateCheckResult
 import com.bikeshare.app.domain.update.UpdateChecker
 import com.bikeshare.app.domain.update.UpdateInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import javax.inject.Inject
 data class AboutUiState(
     val updateInfo: UpdateInfo? = null,
     val isChecking: Boolean = false,
+    val checkFailed: Boolean = false,
 )
 
 @HiltViewModel
@@ -30,10 +32,14 @@ class AboutViewModel @Inject constructor(
 
     fun checkForUpdate() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isChecking = true)
+            _uiState.value = _uiState.value.copy(isChecking = true, checkFailed = false)
             // force = true: bypass the 24h throttle so user sees fresh result on demand
-            val info = updateChecker.checkForUpdate(force = true)
-            _uiState.value = AboutUiState(updateInfo = info, isChecking = false)
+            val result = updateChecker.checkForUpdate(force = true)
+            _uiState.value = AboutUiState(
+                updateInfo = (result as? UpdateCheckResult.Available)?.info,
+                isChecking = false,
+                checkFailed = result is UpdateCheckResult.Failed,
+            )
         }
     }
 }

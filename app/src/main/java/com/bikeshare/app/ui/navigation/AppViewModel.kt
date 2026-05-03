@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bikeshare.app.domain.repository.RentalRepository
+import com.bikeshare.app.domain.update.UpdateCheckResult
 import com.bikeshare.app.domain.update.UpdateChecker
 import com.bikeshare.app.domain.update.UpdateInfo
 import com.bikeshare.app.notification.FreeTimeNotificationScheduler
@@ -31,8 +32,10 @@ class AppViewModel @Inject constructor(
 
     fun checkForUpdate() {
         viewModelScope.launch {
-            val info = updateChecker.checkForUpdate() ?: return@launch
-            _updateInfo.value = info
+            val result = updateChecker.checkForUpdate()
+            if (result is UpdateCheckResult.Available) {
+                _updateInfo.value = result.info
+            }
         }
     }
 
