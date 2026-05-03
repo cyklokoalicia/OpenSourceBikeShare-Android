@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -39,6 +41,17 @@ android {
         buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
         buildConfigField("String", "UPDATE_CHECK_URL", "\"$updateCheckUrl\"")
         buildConfigField("String", "WEBSITE_URL", "\"$websiteUrl\"")
+
+        // Host used in QR-code URLs (.../scan.php/rent/N, .../scan.php/return/X) — derived
+        // from API_BASE_URL so a deployment-specific build links to its own domain. Used as a
+        // manifest placeholder for the App Links intent-filter on MainActivity. Fail loudly
+        // on a malformed API_BASE_URL — silently falling back would ship an APK that
+        // registers handlers for the wrong domain.
+        val scanHost: String = runCatching { URI(apiBaseUrl).host }
+            .getOrNull()
+            ?.takeIf { it.isNotBlank() }
+            ?: error("API_BASE_URL=\"$apiBaseUrl\" is malformed — cannot derive a host for App Links")
+        manifestPlaceholders["scanHost"] = scanHost
 
         resValue("string", "app_name", appName)
     }

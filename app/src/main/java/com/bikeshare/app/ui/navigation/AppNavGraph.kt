@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,7 +66,9 @@ data class BottomNavItem(
 fun AppNavGraph(
     appViewModel: AppViewModel = hiltViewModel(),
     navigateTo: String? = null,
+    pendingQrUrl: String? = null,
     onNavigationConsumed: () -> Unit = {},
+    onQrConsumed: () -> Unit = {},
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -101,6 +104,31 @@ fun AppNavGraph(
             null -> Unit
             else -> onNavigationConsumed()
         }
+    }
+
+    // Deep-link arrives via Intent.ACTION_VIEW (e.g. user opened a /scan.php/... URL from
+    // the system camera). Apply it once the Map screen is reachable; keep waiting otherwise
+    // (e.g. user is on Login). Once Map is in the back stack we write the parsed result to
+    // its SavedStateHandle, which MapScreen consumes in the same way as in-app QR scans.
+    LaunchedEffect(pendingQrUrl, currentDestination?.route) {
+        val raw = pendingQrUrl ?: return@LaunchedEffect
+        val mapEntry = navController.currentBackStack.value.firstOrNull {
+            it.destination.route == Screen.Map.route
+        }
+        if (mapEntry == null) {
+            // Not authenticated yet — wait. Effect re-runs when destination changes.
+            return@LaunchedEffect
+        }
+        if (currentDestination?.route != Screen.Map.route) {
+            navController.navigate(Screen.Map.route) {
+                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+            return@LaunchedEffect
+        }
+        applyQrResult(raw, mapEntry.savedStateHandle)
+        onQrConsumed()
     }
 
     val updateAvailableMessage = updateInfo?.let {
@@ -251,21 +279,8 @@ fun AppNavGraph(
                 QrScannerScreen(
                     onBack = { navController.popBackStack() },
                     onQrDetected = { code ->
-                        val mapEntry = navController.getBackStackEntry(Screen.Map.route)
-                        val handle = mapEntry.savedStateHandle
-                        when (val result = parseQrScanResult(code)) {
-                            is QrScanResult.Rent -> {
-                                handle?.set("qr_action", "rent")
-                                handle?.set("qr_bike_number", result.bikeNumber)
-                            }
-                            is QrScanResult.Return -> {
-                                handle?.set("qr_action", "return")
-                                handle?.set("qr_stand_name", result.standName)
-                            }
-                            QrScanResult.Unknown -> {
-                                handle?.set("snackbar", "Unknown QR: $code")
-                            }
-                        }
+                        val handle = navController.getBackStackEntry(Screen.Map.route).savedStateHandle
+                        applyQrResult(code, handle)
                         navController.popBackStack()
                     },
                 )
@@ -328,3 +343,26 @@ fun AppNavGraph(
         }
     }
 }
+
+internal fun applyQrResult(raw: String, handle: SavedStateHandle) {
+    // Clear any keys not produced by this dispatch so a prior unconsumed scan can't
+    // leak into the new one (e.g. an Unknown scan after a stale rent/return).
+    handle.remove<String>("qr_action")
+    handle.remove<Int>("qr_bike_number")
+    handle.remove<String>("qr_stand_name")
+    handle.remove<String>("qr_unknown_raw")
+    when (val result = parseQrScanResult(raw)) {
+        is QrScanResult.Rent -> {
+            handle["qr_action"] = "rent"
+            handle["qr_bike_number"] = result.bikeNumber
+        }
+        is QrScanResult.Return -> {
+            handle["qr_action"] = "return"
+            handle["qr_stand_name"] = result.standName
+        }
+        QrScanResult.Unknown -> {
+            handle["qr_unknown_raw"] = raw
+        }
+    }
+}
+

@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
     ) { }
 
     private var pendingNavigation by mutableStateOf<String?>(null)
+    private var pendingQrUrl by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +38,18 @@ class MainActivity : ComponentActivity() {
                 requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-        pendingNavigation = intent.getStringExtra(FreeTimeNotificationWorker.EXTRA_NAVIGATE_TO)
+        // Only consume on first launch — on configuration changes the same Intent is
+        // redelivered, which would cause deep-link QR actions (rent/return) to fire twice.
+        if (savedInstanceState == null) {
+            consumeIntent(intent)
+        }
         setContent {
             BikeShareTheme {
                 AppNavGraph(
                     navigateTo = pendingNavigation,
+                    pendingQrUrl = pendingQrUrl,
                     onNavigationConsumed = { pendingNavigation = null },
+                    onQrConsumed = { pendingQrUrl = null },
                 )
             }
         }
@@ -51,8 +58,15 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        consumeIntent(intent)
+    }
+
+    private fun consumeIntent(intent: Intent) {
         intent.getStringExtra(FreeTimeNotificationWorker.EXTRA_NAVIGATE_TO)?.let {
             pendingNavigation = it
+        }
+        if (intent.action == Intent.ACTION_VIEW) {
+            intent.dataString?.let { pendingQrUrl = it }
         }
     }
 }

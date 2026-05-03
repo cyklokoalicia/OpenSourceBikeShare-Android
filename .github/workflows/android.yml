@@ -130,6 +130,28 @@ jobs:
           mv app/build/outputs/apk/release/app-release.apk \
              app/build/outputs/apk/release/WhiteBikes-${{ steps.version.outputs.version_name }}.apk
 
+      - name: Extract APK signing fingerprint
+        id: fingerprint
+        run: |
+          APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          # apksigner ships in Android SDK build-tools (pre-installed on ubuntu-latest
+          # at $ANDROID_SDK_ROOT). It supports v1/v2/v3 signing schemes — keytool only
+          # reads v1 (META-INF/*.RSA), which modern AGP no longer emits by default.
+          APKSIGNER=$(ls "$ANDROID_SDK_ROOT"/build-tools/*/apksigner | sort -V | tail -1)
+          RAW=$("$APKSIGNER" verify --print-certs "$APK" \
+            | awk -F': ' '/Signer #1 certificate SHA-256 digest:/ {print $2; exit}')
+          if [ -z "$RAW" ]; then
+            echo "::error::Could not extract SHA-256 fingerprint from $APK"
+            exit 1
+          fi
+          # apksigner emits lowercase hex without separators (e.g. ab12...). Convert to
+          # the colon-separated uppercase form expected by assetlinks.json (AB:12:...).
+          FP=$(echo "$RAW" | tr 'a-f' 'A-F' | sed 's/\(..\)/\1:/g; s/:$//')
+          HOST=$(echo '${{ vars.API_BASE_URL }}' | sed -E 's|^https?://([^/]+).*|\1|')
+          echo "sha256=$FP" >> $GITHUB_OUTPUT
+          echo "assetlinks_url=https://$HOST/.well-known/assetlinks.json" >> $GITHUB_OUTPUT
+          echo "Release SHA-256: $FP"
+
       - name: Generate changelog
         id: changelog
         run: |
@@ -150,4 +172,11 @@ jobs:
           body: |
             ## Changes
             ${{ steps.changelog.outputs.changelog }}
+
+            ## App signing
+            **SHA-256:** `${{ steps.fingerprint.outputs.sha256 }}`
+
+            If you sideload this APK, verify the fingerprint matches the one published at
+            <${{ steps.fingerprint.outputs.assetlinks_url }}>. A match confirms the APK was
+            built and signed by the project's release key and has not been tampered with.
           files: app/build/outputs/apk/release/WhiteBikes-${{ steps.version.outputs.version_name }}.apk

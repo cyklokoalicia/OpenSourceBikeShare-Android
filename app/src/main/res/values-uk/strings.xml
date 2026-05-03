@@ -42,6 +42,10 @@
     <string name="rent_button">Орендувати</string>
     <string name="qr_scan">Сканувати QR</string>
     <string name="qr_scan_instruction">Наведіть камеру на QR-код на велосипеді або стенді</string>
+    <string name="qr_return_dialog_title">Повернути на %1$s</string>
+    <string name="qr_return_no_rental">У вас немає орендованих велосипедів для повернення на цей стенд.</string>
+    <string name="qr_return_pick_prompt">Виберіть, який велосипед повернути:</string>
+    <string name="qr_unknown">Невідомий QR-код: %1$s</string>
     <string name="my_location">Моє місце</string>
     <string name="service_stand">Сервіс</string>
 
