@@ -112,13 +112,11 @@ fun AppNavGraph(
     // its SavedStateHandle, which MapScreen consumes in the same way as in-app QR scans.
     LaunchedEffect(pendingQrUrl, currentDestination?.route) {
         val raw = pendingQrUrl ?: return@LaunchedEffect
-        val mapEntry = navController.currentBackStack.value.firstOrNull {
-            it.destination.route == Screen.Map.route
-        }
-        if (mapEntry == null) {
-            // Not authenticated yet — wait. Effect re-runs when destination changes.
-            return@LaunchedEffect
-        }
+        // getBackStackEntry throws IllegalArgumentException when Map isn't in the
+        // back stack yet (e.g. user is on Login). Treat that as "wait" — the effect
+        // re-runs on destination changes, so we'll retry once Map is reached.
+        val mapEntry = runCatching { navController.getBackStackEntry(Screen.Map.route) }
+            .getOrNull() ?: return@LaunchedEffect
         if (currentDestination?.route != Screen.Map.route) {
             navController.navigate(Screen.Map.route) {
                 popUpTo(navController.graph.findStartDestination().id) { saveState = true }
