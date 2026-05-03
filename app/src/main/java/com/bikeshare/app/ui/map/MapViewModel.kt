@@ -32,7 +32,8 @@ data class MapUiState(
     val rentResult: String? = null,
     val rentCodeInfo: RentSystemResultDto? = null,
     val rentCodeMessage: String? = null,
-    val returnResult: String? = null,
+    val returnCodeInfo: RentSystemResultDto? = null,
+    val returnCodeMessage: String? = null,
 )
 
 @HiltViewModel
@@ -162,7 +163,8 @@ class MapViewModel @Inject constructor(
                     FreeTimeNotificationScheduler.cancelForBike(appContext, bikeNumber)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        returnResult = messageRenderer.renderFromDto(
+                        returnCodeInfo = result.data,
+                        returnCodeMessage = messageRenderer.renderFromDto(
                             result.data.code,
                             result.data.params,
                             fallback = result.data.message,
@@ -200,7 +202,7 @@ class MapViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(rentCodeInfo = null, rentCodeMessage = null)
     }
 
-    fun clearReturnResult() {
-        _uiState.value = _uiState.value.copy(returnResult = null)
+    fun clearReturnCodeInfo() {
+        _uiState.value = _uiState.value.copy(returnCodeInfo = null, returnCodeMessage = null)
     }
 }
