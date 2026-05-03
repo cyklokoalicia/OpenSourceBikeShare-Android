@@ -21,27 +21,38 @@ class UpdateChecker @Inject constructor(
     /**
      * @param force bypass the 24h throttle (useful for testing / manual triggers)
      */
-    suspend fun checkForUpdate(force: Boolean = false): UpdateInfo? {
-        if (BuildConfig.UPDATE_CHECK_URL.isBlank()) return null
+    suspend fun checkForUpdate(force: Boolean = false): UpdateCheckResult {
+        if (BuildConfig.UPDATE_CHECK_URL.isBlank()) return UpdateCheckResult.Disabled
 
-        if (!force && !shouldCheckNow()) return null
+        if (!force && !shouldCheckNow()) return UpdateCheckResult.UpToDate
 
-        val release = runCatching { api.getLatestRelease(BuildConfig.UPDATE_CHECK_URL) }
-            .getOrNull()?.takeIf { it.isSuccessful }?.body()
-            ?: return null
+        val response = runCatching { api.getLatestRelease(BuildConfig.UPDATE_CHECK_URL) }
+            .onFailure { Timber.w(it, "Update check threw — assuming Failed") }
+            .getOrNull()
+            ?: return UpdateCheckResult.Failed
+
+        if (!response.isSuccessful) {
+            Timber.w("Update check returned HTTP %d (rate limit / server error)", response.code())
+            return UpdateCheckResult.Failed
+        }
+        val release = response.body()
+        if (release == null) {
+            Timber.w("Update check: HTTP 2xx but body was null")
+            return UpdateCheckResult.Failed
+        }
 
         prefs.edit().putLong(KEY_LAST_CHECK, System.currentTimeMillis()).apply()
 
-        if (release.draft || release.prerelease) return null
+        if (release.draft || release.prerelease) return UpdateCheckResult.UpToDate
 
         val latest = release.tagName.removePrefix("v")
         val current = BuildConfig.VERSION_NAME
 
         return if (isNewer(latest, current)) {
-            Timber.i("Update available: $current → $latest")
-            UpdateInfo(latestVersion = latest, releaseUrl = release.htmlUrl)
+            Timber.i("Update available: %s → %s", current, latest)
+            UpdateCheckResult.Available(UpdateInfo(latestVersion = latest, releaseUrl = release.htmlUrl))
         } else {
-            null
+            UpdateCheckResult.UpToDate
         }
     }
 
@@ -50,20 +61,20 @@ class UpdateChecker @Inject constructor(
         return System.currentTimeMillis() - lastCheck >= CHECK_INTERVAL_MILLIS
     }
 
-    private fun isNewer(latest: String, current: String): Boolean {
-        val l = latest.split('.').mapNotNull { it.toIntOrNull() }
-        val c = current.split('.').mapNotNull { it.toIntOrNull() }
-        for (i in 0 until maxOf(l.size, c.size)) {
-            val a = l.getOrElse(i) { 0 }
-            val b = c.getOrElse(i) { 0 }
-            if (a != b) return a > b
-        }
-        return false
-    }
-
     companion object {
         private const val PREFS_NAME = "update_checker"
         private const val KEY_LAST_CHECK = "last_check_millis"
         private val CHECK_INTERVAL_MILLIS = TimeUnit.HOURS.toMillis(24)
+
+        internal fun isNewer(latest: String, current: String): Boolean {
+            val l = latest.split('.').mapNotNull { it.toIntOrNull() }
+            val c = current.split('.').mapNotNull { it.toIntOrNull() }
+            for (i in 0 until maxOf(l.size, c.size)) {
+                val a = l.getOrElse(i) { 0 }
+                val b = c.getOrElse(i) { 0 }
+                if (a != b) return a > b
+            }
+            return false
+        }
     }
 }

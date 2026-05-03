@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.Button
@@ -27,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -112,7 +114,9 @@ fun AboutScreen(
             UpdateStatusCard(
                 isChecking = uiState.isChecking,
                 updateInfo = uiState.updateInfo,
+                checkFailed = uiState.checkFailed,
                 onDownload = { url -> openUrl(context, url) },
+                onRetry = { viewModel.checkForUpdate() },
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +135,9 @@ fun AboutScreen(
 private fun UpdateStatusCard(
     isChecking: Boolean,
     updateInfo: com.bikeshare.app.domain.update.UpdateInfo?,
+    checkFailed: Boolean,
     onDownload: (String) -> Unit,
+    onRetry: () -> Unit,
 ) {
     when {
         isChecking -> {
@@ -178,6 +184,37 @@ private fun UpdateStatusCard(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(stringResource(R.string.update_download))
+                    }
+                }
+            }
+        }
+        checkFailed -> {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                ),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.ErrorOutline,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                        )
+                        Spacer(modifier = Modifier.size(12.dp))
+                        Text(
+                            stringResource(R.string.about_check_failed),
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = onRetry,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.about_retry_check))
                     }
                 }
             }
