@@ -74,12 +74,6 @@ fun MapScreen(
         }
     }
 
-    LaunchedEffect(uiState.returnResult) {
-        uiState.returnResult?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearReturnResult()
-        }
-    }
 
     val appContext = context.applicationContext
     LaunchedEffect(uiState.myBikes, uiState.limits) {
@@ -126,18 +120,26 @@ fun MapScreen(
         if (qrAction == null) return@LaunchedEffect
         when (qrAction) {
             "rent" -> qrBikeNumber?.let { viewModel.rentBike(it) }
-            "return" -> qrStandName?.let { stand ->
-                val myBikes = uiState.myBikes
-                if (myBikes.size == 1) {
-                    viewModel.returnBike(myBikes.first().bikeNum, stand)
-                } else {
-                    pendingReturnStand = stand
-                }
-            }
+            // Don't read myBikes here — when QR arrives via deep-link the API call
+            // for /me/bikes may not have returned yet, so myBikes can still be empty
+            // and the auto-return path would be missed. Defer to a separate effect
+            // that observes both pendingReturnStand and uiState.myBikes.
+            "return" -> qrStandName?.let { stand -> pendingReturnStand = stand }
         }
         qrSavedStateHandle?.remove<String>("qr_action")
         qrSavedStateHandle?.remove<Int>("qr_bike_number")
         qrSavedStateHandle?.remove<String>("qr_stand_name")
+    }
+
+    // Trigger auto-return as soon as we know there is exactly one rented bike. Re-runs
+    // when myBikes finally arrives, fixing the race where the QR-handling effect above
+    // would otherwise have shown the bike picker for size==0 momentarily.
+    LaunchedEffect(pendingReturnStand, uiState.myBikes) {
+        val stand = pendingReturnStand ?: return@LaunchedEffect
+        if (uiState.myBikes.size == 1) {
+            viewModel.returnBike(uiState.myBikes.first().bikeNum, stand)
+            pendingReturnStand = null
+        }
     }
 
     val mapViewRef = remember { mutableStateOf<org.osmdroid.views.MapView?>(null) }
@@ -299,6 +301,34 @@ fun MapScreen(
                         }
                     }
                 } else null,
+            )
+        }
+
+        // Return-success dialog. The lock code is the most important piece of info
+        // — using a persistent dialog instead of a 4 s snackbar so the user has time
+        // to read it and walk over to the bike.
+        uiState.returnCodeInfo?.let { returnInfo ->
+            AlertDialog(
+                onDismissRequest = { viewModel.clearReturnCodeInfo() },
+                title = { Text(stringResource(R.string.return_button)) },
+                text = {
+                    Column {
+                        uiState.returnCodeMessage?.takeIf { it.isNotBlank() }?.let { Text(it) }
+                        returnInfo.params?.currentCode?.let {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "🔒 ${stringResource(R.string.lock_code, it)}",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = { viewModel.clearReturnCodeInfo() }) {
+                        Text(stringResource(R.string.ok))
+                    }
+                },
             )
         }
 
