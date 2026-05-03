@@ -42,6 +42,10 @@
     <string name="rent_button">Požičať</string>
     <string name="qr_scan">Skenovať QR</string>
     <string name="qr_scan_instruction">Namierte kameru na QR kód na bicykli alebo stojane</string>
+    <string name="qr_return_dialog_title">Vrátiť na %1$s</string>
+    <string name="qr_return_no_rental">Nemáte žiadne požičané bicykle na vrátenie na tento stojan.</string>
+    <string name="qr_return_pick_prompt">Vyberte, ktorý bicykel vrátiť:</string>
+    <string name="qr_unknown">Neznámy QR kód: %1$s</string>
     <string name="my_location">Moja poloha</string>
     <string name="service_stand">Servis</string>
 

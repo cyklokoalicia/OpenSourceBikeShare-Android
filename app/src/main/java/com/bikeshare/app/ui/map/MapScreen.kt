@@ -96,25 +96,42 @@ fun MapScreen(
         }
     }
 
-    val qrAction = qrSavedStateHandle?.get<String>("qr_action")
-    val qrBikeNumber = qrSavedStateHandle?.get<Int>("qr_bike_number")
-    val qrStandName = qrSavedStateHandle?.get<String>("qr_stand_name")
-    val qrSnackbar = qrSavedStateHandle?.get<String>("snackbar")
-    LaunchedEffect(qrAction, qrBikeNumber, qrStandName, qrSnackbar) {
-        qrSnackbar?.let { msg ->
+    var pendingReturnStand by remember { mutableStateOf<String?>(null) }
+
+    // Reactive reads — SavedStateHandle.get() is not Compose-observable, so writes
+    // performed while MapScreen is already on screen (e.g. an https://.../scan.php/...
+    // App Link delivered via Intent.ACTION_VIEW) would otherwise be invisible to it.
+    val qrAction = qrSavedStateHandle
+        ?.getStateFlow<String?>("qr_action", null)
+        ?.collectAsStateWithLifecycle()
+        ?.value
+    val qrBikeNumber = qrSavedStateHandle
+        ?.getStateFlow<Int?>("qr_bike_number", null)
+        ?.collectAsStateWithLifecycle()
+        ?.value
+    val qrStandName = qrSavedStateHandle
+        ?.getStateFlow<String?>("qr_stand_name", null)
+        ?.collectAsStateWithLifecycle()
+        ?.value
+    val qrUnknownRaw = qrSavedStateHandle
+        ?.getStateFlow<String?>("qr_unknown_raw", null)
+        ?.collectAsStateWithLifecycle()
+        ?.value
+    val qrUnknownMessage = qrUnknownRaw?.let { stringResource(R.string.qr_unknown, it) }
+    LaunchedEffect(qrAction, qrBikeNumber, qrStandName, qrUnknownRaw) {
+        qrUnknownMessage?.let { msg ->
             snackbarHostState.showSnackbar(msg)
-            qrSavedStateHandle?.remove<String>("snackbar")
+            qrSavedStateHandle?.remove<String>("qr_unknown_raw")
         }
         if (qrAction == null) return@LaunchedEffect
         when (qrAction) {
             "rent" -> qrBikeNumber?.let { viewModel.rentBike(it) }
-            "return" -> {
-                val stand = qrStandName ?: return@LaunchedEffect
+            "return" -> qrStandName?.let { stand ->
                 val myBikes = uiState.myBikes
                 if (myBikes.size == 1) {
                     viewModel.returnBike(myBikes.first().bikeNum, stand)
                 } else {
-                    snackbarHostState.showSnackbar("Scanned stand: $stand. Return only when 1 bike is rented.")
+                    pendingReturnStand = stand
                 }
             }
         }
@@ -235,6 +252,54 @@ fun MapScreen(
                     },
                 )
             }
+        }
+
+        // Return-bike dialog when stand QR is scanned but auto-return is not possible
+        // (0 active rentals or 2+ active rentals — user picks which bike to return).
+        pendingReturnStand?.let { stand ->
+            val myBikes = uiState.myBikes
+            AlertDialog(
+                onDismissRequest = { pendingReturnStand = null },
+                title = { Text(stringResource(R.string.qr_return_dialog_title, stand)) },
+                text = {
+                    if (myBikes.isEmpty()) {
+                        Text(stringResource(R.string.qr_return_no_rental))
+                    } else {
+                        Column {
+                            Text(stringResource(R.string.qr_return_pick_prompt))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            myBikes.forEach { bike ->
+                                TextButton(
+                                    onClick = {
+                                        viewModel.returnBike(bike.bikeNum, stand)
+                                        pendingReturnStand = null
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.bike_number, bike.bikeNum),
+                                        modifier = Modifier.fillMaxWidth(),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    if (myBikes.isEmpty()) {
+                        TextButton(onClick = { pendingReturnStand = null }) {
+                            Text(stringResource(R.string.ok))
+                        }
+                    }
+                },
+                dismissButton = if (myBikes.isNotEmpty()) {
+                    {
+                        TextButton(onClick = { pendingReturnStand = null }) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                    }
+                } else null,
+            )
         }
 
         // Rent code dialog (params only, no HTML)

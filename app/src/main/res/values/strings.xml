@@ -42,6 +42,10 @@
     <string name="rent_button">Rent</string>
     <string name="qr_scan">Scan QR</string>
     <string name="qr_scan_instruction">Point the camera at a QR code on a bike or stand</string>
+    <string name="qr_return_dialog_title">Return to %1$s</string>
+    <string name="qr_return_no_rental">You have no rented bikes to return at this stand.</string>
+    <string name="qr_return_pick_prompt">Choose which bike to return:</string>
+    <string name="qr_unknown">Unknown QR code: %1$s</string>
     <string name="my_location">My location</string>
     <string name="service_stand">Service</string>
 
