@@ -48,6 +48,7 @@
     <string name="qr_unknown">Neznámy QR kód: %1$s</string>
     <string name="my_location">Moja poloha</string>
     <string name="service_stand">Servis</string>
+    <string name="hidden_stand">Test</string>
 
     <!-- Rentals -->
     <string name="no_rented_bikes">Nemáte žiadne požičané bicykle</string>
@@ -157,6 +158,7 @@
     <string name="api_bike_rent_error_insufficient_credit">Máte menej ako požadovaný kredit %1$s%2$s. Prosím, dobite si kredit.</string>
     <string name="api_bike_rent_error_zero_limit">Nemôžete si požičať žiadne bicykle. Kontaktujte administrátorov, aby zrušili zákaz.</string>
     <string name="api_bike_rent_error_service_stand">Požičiavanie zo servisných stojanov nie je povolené: Bicykel pravdepodobne čaká na opravu.</string>
+    <string name="api_bike_rent_error_inactive_stand">Požičiavanie z neaktívnych stojanov nie je povolené.</string>
     <string name="api_bike_rent_error_stack_top_bike">Bicykel #%1$d momentálne nie je možné si požičať, musíte si požičať bicykel #%2$d z tohto stojanu.</string>
     <plurals name="api_bike_rent_error_limit">
         <item quantity="one">Môžete si naraz požičať len %d bicykel.</item>
