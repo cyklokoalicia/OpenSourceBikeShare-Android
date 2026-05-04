@@ -48,6 +48,7 @@
     <string name="qr_unknown">Невідомий QR-код: %1$s</string>
     <string name="my_location">Моє місце</string>
     <string name="service_stand">Сервіс</string>
+    <string name="hidden_stand">Тест</string>
 
     <!-- Rentals -->
     <string name="no_rented_bikes">У вас немає орендованих велосипедів</string>
@@ -157,6 +158,7 @@
     <string name="api_bike_rent_error_insufficient_credit">Ваш кредит менший за необхідний %1$s%2$s. Будь ласка, поповніть кредит.</string>
     <string name="api_bike_rent_error_zero_limit">Ви не можете орендувати велосипеди. Зверніться до адміністраторів, щоб зняти заборону.</string>
     <string name="api_bike_rent_error_service_stand">Оренда зі сервісних стоянок не дозволена: велосипед, ймовірно, чекає на ремонт.</string>
+    <string name="api_bike_rent_error_inactive_stand">Оренда з неактивних стоянок не дозволена.</string>
     <string name="api_bike_rent_error_stack_top_bike">Велосипед №%1$d зараз неможливо орендувати, ви маєте орендувати велосипед №%2$d з цієї стоянки.</string>
     <plurals name="api_bike_rent_error_limit">
         <item quantity="one">Ви можете орендувати одночасно лише %d велосипед.</item>

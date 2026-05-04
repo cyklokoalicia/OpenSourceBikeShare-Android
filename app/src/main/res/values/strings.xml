@@ -48,6 +48,7 @@
     <string name="qr_unknown">Unknown QR code: %1$s</string>
     <string name="my_location">My location</string>
     <string name="service_stand">Service</string>
+    <string name="hidden_stand">Testing</string>
 
     <!-- Rentals -->
     <string name="no_rented_bikes">You have no rented bikes</string>
@@ -157,6 +158,7 @@
     <string name="api_bike_rent_error_insufficient_credit">You are below required credit %1$s%2$s. Please, recharge your credit.</string>
     <string name="api_bike_rent_error_zero_limit">You can not rent any bikes. Contact the admins to lift the ban.</string>
     <string name="api_bike_rent_error_service_stand">Renting from service stands is not allowed: The bike probably waits for a repair.</string>
+    <string name="api_bike_rent_error_inactive_stand">Renting from inactive stands is not allowed.</string>
     <string name="api_bike_rent_error_stack_top_bike">Bike #%1$d is not rentable now, you have to rent bike #%2$d from this stand.</string>
     <plurals name="api_bike_rent_error_limit">
         <item quantity="one">You can only rent %d bike at once.</item>

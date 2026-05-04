@@ -174,6 +174,7 @@ fun MapScreen(
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             val bikesAvailableText = stringResource(R.string.bikes_available)
             val serviceStandLabel = stringResource(R.string.service_stand)
+            val hiddenStandLabel = stringResource(R.string.hidden_stand)
 
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -197,18 +198,20 @@ fun MapScreen(
                     mapViewRef.value = mapView
                     mapView.overlays.removeAll { it is Marker }
                     uiState.stands.forEach { stand ->
-                        val isService = stand.serviceTag != null && stand.serviceTag != 0
-                        val (markerColor, label) = if (isService) {
-                            AndroidColor.parseColor("#FF9800") to "S" // orange for service
-                        } else {
-                            val bikes = stand.bikeCount ?: 0
-                            (if (bikes > 0) AndroidColor.parseColor("#4CAF50") else AndroidColor.parseColor("#F44336")) to bikes.toString()
+                        val (markerColor, label, statusLabel) = when (stand.status) {
+                            "technical" -> Triple(AndroidColor.parseColor("#FF9800"), "S", serviceStandLabel)
+                            "hidden" -> Triple(AndroidColor.parseColor("#9C27B0"), "H", hiddenStandLabel)
+                            else -> {
+                                val bikes = stand.bikeCount ?: 0
+                                val color = if (bikes > 0) AndroidColor.parseColor("#4CAF50") else AndroidColor.parseColor("#F44336")
+                                Triple(color, bikes.toString(), null)
+                            }
                         }
                         val markerIcon = createCircleMarker(mapView.context, markerColor, label)
                         val marker = Marker(mapView).apply {
                             position = GeoPoint(stand.latitude, stand.longitude)
-                            title = stand.standName + if (isService) " ($serviceStandLabel)" else ""
-                            snippet = if (isService) serviceStandLabel else "$label $bikesAvailableText"
+                            title = stand.standName + if (statusLabel != null) " ($statusLabel)" else ""
+                            snippet = statusLabel ?: "$label $bikesAvailableText"
                             icon = markerIcon
                             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                             setOnMarkerClickListener { _, _ ->

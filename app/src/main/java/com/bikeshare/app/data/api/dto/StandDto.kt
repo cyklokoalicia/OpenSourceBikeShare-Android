@@ -12,7 +12,7 @@ data class StandMarkerDto(
     @Json(name = "latitude") val latitude: Double,
     @Json(name = "longitude") val longitude: Double,
     @Json(name = "bikeCount") val bikeCount: Int? = null,
-    @Json(name = "serviceTag") val serviceTag: Int? = null,
+    @Json(name = "status") val status: String? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -21,7 +21,7 @@ data class StandDetailDto(
     @Json(name = "standName") val standName: String,
     @Json(name = "standDescription") val standDescription: String? = null,
     @Json(name = "standPhoto") val standPhoto: String? = null,
-    @Json(name = "serviceTag") val serviceTag: Int? = null,
+    @Json(name = "status") val status: String? = null,
     @Json(name = "placeName") val placeName: String? = null,
     @Json(name = "latitude") val latitude: Double? = null,
     @Json(name = "longitude") val longitude: Double? = null,
