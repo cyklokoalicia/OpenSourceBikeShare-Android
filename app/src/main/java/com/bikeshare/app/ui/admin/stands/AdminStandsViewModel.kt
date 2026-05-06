@@ -15,10 +15,18 @@ import javax.inject.Inject
 
 data class AdminStandsUiState(
     val stands: List<StandDetailDto> = emptyList(),
+    val selectedStatuses: Set<String> = emptySet(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val message: String? = null,
-)
+) {
+    val visibleStands: List<StandDetailDto>
+        get() = if (selectedStatuses.isEmpty()) {
+            stands
+        } else {
+            stands.filter { (it.status ?: "active") in selectedStatuses }
+        }
+}
 
 @HiltViewModel
 class AdminStandsViewModel @Inject constructor(
@@ -31,6 +39,14 @@ class AdminStandsViewModel @Inject constructor(
 
     init {
         loadStands()
+    }
+
+    fun toggleStatusFilter(status: String) {
+        _uiState.value = _uiState.value.copy(
+            selectedStatuses = _uiState.value.selectedStatuses
+                .toMutableSet()
+                .apply { if (!add(status)) remove(status) }
+        )
     }
 
     fun loadStands() {

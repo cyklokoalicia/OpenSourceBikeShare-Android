@@ -128,6 +128,18 @@
     <string name="admin_status">Stav: %1$s</string>
     <string name="admin_code_label">Kód: %1$s</string>
 
+    <!-- Stand status labels -->
+    <string name="stand_status_active">Aktívny</string>
+    <string name="stand_status_technical">Technický</string>
+    <string name="stand_status_hidden">Skrytý</string>
+    <string name="stand_status_inactive">Neaktívny</string>
+    <string name="stand_status_virtual">Virtuálny</string>
+
+    <!-- Bike status labels -->
+    <string name="bike_status_problematic">Problémový</string>
+    <string name="bike_status_rented">Požičaný</string>
+    <string name="bike_status_ok">OK</string>
+
     <!-- Update notification -->
     <string name="update_available">Je dostupná nová verzia %1$s</string>
     <string name="update_download">Stiahnuť</string>

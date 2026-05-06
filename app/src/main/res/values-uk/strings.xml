@@ -128,6 +128,18 @@
     <string name="admin_status">Статус: %1$s</string>
     <string name="admin_code_label">Код: %1$s</string>
 
+    <!-- Stand status labels -->
+    <string name="stand_status_active">Активний</string>
+    <string name="stand_status_technical">Технічний</string>
+    <string name="stand_status_hidden">Прихований</string>
+    <string name="stand_status_inactive">Неактивний</string>
+    <string name="stand_status_virtual">Віртуальний</string>
+
+    <!-- Bike status labels -->
+    <string name="bike_status_problematic">Проблемний</string>
+    <string name="bike_status_rented">Орендований</string>
+    <string name="bike_status_ok">OK</string>
+
     <!-- Update notification -->
     <string name="update_available">Доступна нова версія %1$s</string>
     <string name="update_download">Завантажити</string>

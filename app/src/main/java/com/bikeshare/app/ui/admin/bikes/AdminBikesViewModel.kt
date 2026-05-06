@@ -15,9 +15,16 @@ import javax.inject.Inject
 
 data class AdminBikesUiState(
     val bikes: List<BikeDetailDto> = emptyList(),
+    val selectedStatuses: Set<String> = emptySet(),
     val isLoading: Boolean = false,
     val error: String? = null,
 )
+
+fun BikeDetailDto.derivedStatus(): String = when {
+    userName != null -> "rented"
+    !notes.isNullOrBlank() -> "problematic"
+    else -> "ok"
+}
 
 @HiltViewModel
 class AdminBikesViewModel @Inject constructor(
@@ -32,15 +39,27 @@ class AdminBikesViewModel @Inject constructor(
         loadBikes()
     }
 
+    fun toggleStatusFilter(status: String) {
+        _uiState.value = _uiState.value.copy(
+            selectedStatuses = _uiState.value.selectedStatuses
+                .toMutableSet()
+                .apply { if (!add(status)) remove(status) }
+        )
+    }
+
     fun loadBikes() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             when (val result = safeApiCall(moshi) { api.getAdminBikes() }) {
                 is NetworkResult.Success -> {
-                    _uiState.value = AdminBikesUiState(bikes = result.data)
+                    _uiState.value = _uiState.value.copy(
+                        bikes = result.data,
+                        isLoading = false,
+                        error = null,
+                    )
                 }
                 is NetworkResult.Error -> {
-                    _uiState.value = AdminBikesUiState(error = result.message)
+                    _uiState.value = _uiState.value.copy(error = result.message, isLoading = false)
                 }
                 is NetworkResult.Loading -> {}
             }
