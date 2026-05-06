@@ -1,11 +1,9 @@
 package com.bikeshare.app.ui.admin.stands
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Place
@@ -20,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bikeshare.app.R
 import com.bikeshare.app.data.api.dto.StandDetailDto
 import com.bikeshare.app.ui.admin.StandStatusOptions
+import com.bikeshare.app.ui.admin.StatusFilterRow
 import com.bikeshare.app.ui.admin.standStatusOption
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,6 +28,14 @@ fun AdminStandsScreen(
     viewModel: AdminStandsViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val visibleStands = remember(uiState.stands, uiState.selectedStatuses) {
+        if (uiState.selectedStatuses.isEmpty()) {
+            uiState.stands
+        } else {
+            uiState.stands.filter { (it.status ?: "active") in uiState.selectedStatuses }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -43,7 +50,8 @@ fun AdminStandsScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            StandStatusFilterRow(
+            StatusFilterRow(
+                options = StandStatusOptions,
                 selected = uiState.selectedStatuses,
                 onToggle = viewModel::toggleStatusFilter,
             )
@@ -55,38 +63,12 @@ fun AdminStandsScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(uiState.visibleStands) { stand ->
+                        items(visibleStands) { stand ->
                             StandCard(stand = stand)
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun StandStatusFilterRow(
-    selected: Set<String>,
-    onToggle: (String) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        StandStatusOptions.forEach { option ->
-            FilterChip(
-                selected = option.key in selected,
-                onClick = { onToggle(option.key) },
-                label = { Text(stringResource(option.labelRes)) },
-                leadingIcon = option.icon?.let {
-                    { Icon(it, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
-                },
-            )
         }
     }
 }

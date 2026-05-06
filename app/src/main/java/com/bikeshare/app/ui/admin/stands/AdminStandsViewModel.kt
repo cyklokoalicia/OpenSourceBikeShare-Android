@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bikeshare.app.data.api.ApiService
 import com.bikeshare.app.data.api.dto.StandDetailDto
+import com.bikeshare.app.ui.admin.toggleElement
 import com.bikeshare.app.util.NetworkResult
 import com.bikeshare.app.util.safeApiCall
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,14 +21,7 @@ data class AdminStandsUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val message: String? = null,
-) {
-    val visibleStands: List<StandDetailDto>
-        get() = if (selectedStatuses.isEmpty()) {
-            stands
-        } else {
-            stands.filter { (it.status ?: "active") in selectedStatuses }
-        }
-}
+)
 
 @HiltViewModel
 class AdminStandsViewModel @Inject constructor(
@@ -42,11 +37,7 @@ class AdminStandsViewModel @Inject constructor(
     }
 
     fun toggleStatusFilter(status: String) {
-        _uiState.value = _uiState.value.copy(
-            selectedStatuses = _uiState.value.selectedStatuses
-                .toMutableSet()
-                .apply { if (!add(status)) remove(status) }
-        )
+        _uiState.update { it.copy(selectedStatuses = it.selectedStatuses.toggleElement(status)) }
     }
 
     fun loadStands() {

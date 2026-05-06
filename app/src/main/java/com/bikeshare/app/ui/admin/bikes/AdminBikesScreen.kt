@@ -1,11 +1,9 @@
 package com.bikeshare.app.ui.admin.bikes
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
@@ -22,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bikeshare.app.R
 import com.bikeshare.app.data.api.dto.BikeDetailDto
 import com.bikeshare.app.ui.admin.BikeStatusOptions
+import com.bikeshare.app.ui.admin.StatusFilterRow
 import com.bikeshare.app.ui.admin.bikeStatusOption
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +64,8 @@ fun AdminBikesScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            BikeStatusFilterRow(
+            StatusFilterRow(
+                options = BikeStatusOptions,
                 selected = uiState.selectedStatuses,
                 onToggle = viewModel::toggleStatusFilter,
             )
@@ -99,32 +99,6 @@ fun AdminBikesScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BikeStatusFilterRow(
-    selected: Set<String>,
-    onToggle: (String) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        BikeStatusOptions.forEach { option ->
-            FilterChip(
-                selected = option.key in selected,
-                onClick = { onToggle(option.key) },
-                label = { Text(stringResource(option.labelRes)) },
-                leadingIcon = option.icon?.let {
-                    { Icon(it, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
-                },
-            )
         }
     }
 }

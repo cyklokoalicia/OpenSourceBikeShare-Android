@@ -1,6 +1,13 @@
 package com.bikeshare.app.ui.admin
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Block
@@ -9,8 +16,17 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.bikeshare.app.R
 
 /**
@@ -54,8 +70,40 @@ val BikeStatusOptions: List<StatusOption> = listOf(
     StatusOption("ok", R.string.bike_status_ok, Icons.AutoMirrored.Filled.DirectionsBike, null),
 )
 
-fun standStatusOption(status: String?): StatusOption? =
-    status?.let { key -> StandStatusOptions.firstOrNull { it.key == key } }
+private val StandStatusByKey: Map<String, StatusOption> = StandStatusOptions.associateBy { it.key }
+private val BikeStatusByKey: Map<String, StatusOption> = BikeStatusOptions.associateBy { it.key }
 
-fun bikeStatusOption(status: String?): StatusOption? =
-    status?.let { key -> BikeStatusOptions.firstOrNull { it.key == key } }
+fun standStatusOption(status: String?): StatusOption? = status?.let(StandStatusByKey::get)
+
+fun bikeStatusOption(status: String?): StatusOption? = status?.let(BikeStatusByKey::get)
+
+/** Returns a copy of the set with `element` toggled (added if absent, removed if present). */
+fun <T> Set<T>.toggleElement(element: T): Set<T> =
+    toMutableSet().apply { if (!add(element)) remove(element) }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StatusFilterRow(
+    options: List<StatusOption>,
+    selected: Set<String>,
+    onToggle: (String) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        options.forEach { option ->
+            FilterChip(
+                selected = option.key in selected,
+                onClick = { onToggle(option.key) },
+                label = { Text(stringResource(option.labelRes)) },
+                leadingIcon = option.icon?.let {
+                    { Icon(it, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
+                },
+            )
+        }
+    }
+}
