@@ -10,33 +10,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bikeshare.app.R
 import com.bikeshare.app.data.api.dto.BikeDetailDto
-import com.bikeshare.app.ui.admin.bikeStatusPalette
-
-private data class BikeStatusOption(
-    val value: String,
-    val labelRes: Int,
-    val icon: ImageVector,
-)
-
-private val BikeStatusOptions = listOf(
-    BikeStatusOption("problematic", R.string.bike_status_problematic, Icons.Default.Warning),
-    BikeStatusOption("rented", R.string.bike_status_rented, Icons.Default.Person),
-    BikeStatusOption("ok", R.string.bike_status_ok, Icons.AutoMirrored.Filled.DirectionsBike),
-)
+import com.bikeshare.app.ui.admin.BikeStatusOptions
+import com.bikeshare.app.ui.admin.bikeStatusOption
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -132,11 +118,11 @@ private fun BikeStatusFilterRow(
     ) {
         BikeStatusOptions.forEach { option ->
             FilterChip(
-                selected = option.value in selected,
-                onClick = { onToggle(option.value) },
+                selected = option.key in selected,
+                onClick = { onToggle(option.key) },
                 label = { Text(stringResource(option.labelRes)) },
-                leadingIcon = {
-                    Icon(option.icon, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize))
+                leadingIcon = option.icon?.let {
+                    { Icon(it, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
                 },
             )
         }
@@ -145,9 +131,9 @@ private fun BikeStatusFilterRow(
 
 @Composable
 private fun BikeCard(bike: BikeDetailDto, onClick: () -> Unit) {
-    val palette = bikeStatusPalette(bike.derivedStatus())
-    val containerColor = palette?.container ?: MaterialTheme.colorScheme.surface
-    val onColor = palette?.onContainer ?: MaterialTheme.colorScheme.onSurface
+    val option = bikeStatusOption(bike.derivedStatus())
+    val containerColor = option?.palette?.container ?: MaterialTheme.colorScheme.surface
+    val onColor = option?.palette?.onContainer ?: MaterialTheme.colorScheme.onSurface
 
     Card(
         modifier = Modifier
