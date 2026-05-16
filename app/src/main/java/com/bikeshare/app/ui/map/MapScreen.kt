@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bikeshare.app.R
 import com.bikeshare.app.notification.FreeTimeNotificationScheduler
@@ -40,7 +39,8 @@ import android.graphics.Color as AndroidColor
 @Composable
 fun MapScreen(
     onScanQr: () -> Unit,
-    qrSavedStateHandle: SavedStateHandle?,
+    pendingQrUrl: String? = null,
+    onQrConsumed: () -> Unit = {},
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -90,55 +90,20 @@ fun MapScreen(
         }
     }
 
-    var pendingReturnStand by remember { mutableStateOf<String?>(null) }
-
-    // Reactive reads — SavedStateHandle.get() is not Compose-observable, so writes
-    // performed while MapScreen is already on screen (e.g. an https://.../scan.php/...
-    // App Link delivered via Intent.ACTION_VIEW) would otherwise be invisible to it.
-    val qrAction = qrSavedStateHandle
-        ?.getStateFlow<String?>("qr_action", null)
-        ?.collectAsStateWithLifecycle()
-        ?.value
-    val qrBikeNumber = qrSavedStateHandle
-        ?.getStateFlow<Int?>("qr_bike_number", null)
-        ?.collectAsStateWithLifecycle()
-        ?.value
-    val qrStandName = qrSavedStateHandle
-        ?.getStateFlow<String?>("qr_stand_name", null)
-        ?.collectAsStateWithLifecycle()
-        ?.value
-    val qrUnknownRaw = qrSavedStateHandle
-        ?.getStateFlow<String?>("qr_unknown_raw", null)
-        ?.collectAsStateWithLifecycle()
-        ?.value
-    val qrUnknownMessage = qrUnknownRaw?.let { stringResource(R.string.qr_unknown, it) }
-    LaunchedEffect(qrAction, qrBikeNumber, qrStandName, qrUnknownRaw) {
-        qrUnknownMessage?.let { msg ->
-            snackbarHostState.showSnackbar(msg)
-            qrSavedStateHandle?.remove<String>("qr_unknown_raw")
-        }
-        if (qrAction == null) return@LaunchedEffect
-        when (qrAction) {
-            "rent" -> qrBikeNumber?.let { viewModel.rentBike(it) }
-            // Don't read myBikes here — when QR arrives via deep-link the API call
-            // for /me/bikes may not have returned yet, so myBikes can still be empty
-            // and the auto-return path would be missed. Defer to a separate effect
-            // that observes both pendingReturnStand and uiState.myBikes.
-            "return" -> qrStandName?.let { stand -> pendingReturnStand = stand }
-        }
-        qrSavedStateHandle?.remove<String>("qr_action")
-        qrSavedStateHandle?.remove<Int>("qr_bike_number")
-        qrSavedStateHandle?.remove<String>("qr_stand_name")
+    // Hand the deep-link URL to the ViewModel as soon as the screen sees it. The
+    // ViewModel parses, decides rent vs return vs picker, and drives uiState — so any
+    // resulting dialog renders from the same StateFlow that's already being collected.
+    LaunchedEffect(pendingQrUrl) {
+        val url = pendingQrUrl ?: return@LaunchedEffect
+        viewModel.handleQrScan(url)
+        onQrConsumed()
     }
 
-    // Trigger auto-return as soon as we know there is exactly one rented bike. Re-runs
-    // when myBikes finally arrives, fixing the race where the QR-handling effect above
-    // would otherwise have shown the bike picker for size==0 momentarily.
-    LaunchedEffect(pendingReturnStand, uiState.myBikes) {
-        val stand = pendingReturnStand ?: return@LaunchedEffect
-        if (uiState.myBikes.size == 1) {
-            viewModel.returnBike(uiState.myBikes.first().bikeNum, stand)
-            pendingReturnStand = null
+    val unknownQrMessage = uiState.unknownQrRaw?.let { stringResource(R.string.qr_unknown, it) }
+    LaunchedEffect(unknownQrMessage) {
+        unknownQrMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearUnknownQrRaw()
         }
     }
 
@@ -261,10 +226,10 @@ fun MapScreen(
 
         // Return-bike dialog when stand QR is scanned but auto-return is not possible
         // (0 active rentals or 2+ active rentals — user picks which bike to return).
-        pendingReturnStand?.let { stand ->
+        uiState.pendingReturnStand?.let { stand ->
             val myBikes = uiState.myBikes
             AlertDialog(
-                onDismissRequest = { pendingReturnStand = null },
+                onDismissRequest = { viewModel.clearPendingReturnStand() },
                 title = { Text(stringResource(R.string.qr_return_dialog_title, stand)) },
                 text = {
                     if (myBikes.isEmpty()) {
@@ -276,8 +241,8 @@ fun MapScreen(
                             myBikes.forEach { bike ->
                                 TextButton(
                                     onClick = {
+                                        viewModel.clearPendingReturnStand()
                                         viewModel.returnBike(bike.bikeNum, stand)
-                                        pendingReturnStand = null
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                 ) {
@@ -292,14 +257,14 @@ fun MapScreen(
                 },
                 confirmButton = {
                     if (myBikes.isEmpty()) {
-                        TextButton(onClick = { pendingReturnStand = null }) {
+                        TextButton(onClick = { viewModel.clearPendingReturnStand() }) {
                             Text(stringResource(R.string.ok))
                         }
                     }
                 },
                 dismissButton = if (myBikes.isNotEmpty()) {
                     {
-                        TextButton(onClick = { pendingReturnStand = null }) {
+                        TextButton(onClick = { viewModel.clearPendingReturnStand() }) {
                             Text(stringResource(R.string.cancel))
                         }
                     }

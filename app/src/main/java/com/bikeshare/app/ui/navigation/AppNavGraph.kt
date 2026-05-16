@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +36,7 @@ import com.bikeshare.app.ui.auth.LoginScreen
 import com.bikeshare.app.ui.auth.PhoneVerifyScreen
 import com.bikeshare.app.ui.auth.RegisterScreen
 import com.bikeshare.app.ui.map.MapScreen
+import com.bikeshare.app.ui.map.MapViewModel
 import com.bikeshare.app.ui.rental.RentalScreen
 import com.bikeshare.app.ui.about.AboutScreen
 import com.bikeshare.app.ui.profile.ProfileScreen
@@ -44,8 +44,6 @@ import com.bikeshare.app.ui.credit.CreditScreen
 import com.bikeshare.app.ui.credithistory.CreditHistoryScreen
 import com.bikeshare.app.ui.trips.TripsScreen
 import com.bikeshare.app.ui.scanner.QrScannerScreen
-import com.bikeshare.app.ui.scanner.parseQrScanResult
-import com.bikeshare.app.ui.scanner.QrScanResult
 import com.bikeshare.app.ui.admin.AdminDashboardScreen
 import com.bikeshare.app.ui.admin.stands.AdminStandsScreen
 import com.bikeshare.app.ui.admin.bikes.AdminBikesScreen
@@ -107,26 +105,20 @@ fun AppNavGraph(
     }
 
     // Deep-link arrives via Intent.ACTION_VIEW (e.g. user opened a /scan.php/... URL from
-    // the system camera). Apply it once the Map screen is reachable; keep waiting otherwise
-    // (e.g. user is on Login). Once Map is in the back stack we write the parsed result to
-    // its SavedStateHandle, which MapScreen consumes in the same way as in-app QR scans.
+    // the system camera). Once Map is reachable, navigate there; MapScreen itself consumes
+    // pendingQrUrl via its own ViewModel (single source of truth, no SavedStateHandle
+    // indirection, so the resulting dialog renders without an extra recomposition race).
     LaunchedEffect(pendingQrUrl, currentDestination?.route) {
-        val raw = pendingQrUrl ?: return@LaunchedEffect
-        // getBackStackEntry throws IllegalArgumentException when Map isn't in the
-        // back stack yet (e.g. user is on Login). Treat that as "wait" — the effect
-        // re-runs on destination changes, so we'll retry once Map is reached.
-        val mapEntry = runCatching { navController.getBackStackEntry(Screen.Map.route) }
-            .getOrNull() ?: return@LaunchedEffect
-        if (currentDestination?.route != Screen.Map.route) {
+        if (pendingQrUrl == null) return@LaunchedEffect
+        val mapInStack = runCatching { navController.getBackStackEntry(Screen.Map.route) }
+            .getOrNull() != null
+        if (mapInStack && currentDestination?.route != Screen.Map.route) {
             navController.navigate(Screen.Map.route) {
                 popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                 launchSingleTop = true
                 restoreState = true
             }
-            return@LaunchedEffect
         }
-        applyQrResult(raw, mapEntry.savedStateHandle)
-        onQrConsumed()
     }
 
     val updateAvailableMessage = updateInfo?.let {
@@ -232,10 +224,11 @@ fun AppNavGraph(
                 )
             }
 
-            composable(Screen.Map.route) { backStackEntry ->
+            composable(Screen.Map.route) {
                 MapScreen(
                     onScanQr = { navController.navigate(Screen.QrScanner.route) },
-                    qrSavedStateHandle = backStackEntry.savedStateHandle,
+                    pendingQrUrl = pendingQrUrl,
+                    onQrConsumed = onQrConsumed,
                 )
             }
 
@@ -273,12 +266,13 @@ fun AppNavGraph(
                 AboutScreen(onBack = { navController.popBackStack() })
             }
 
-            composable(Screen.QrScanner.route) {
+            composable(Screen.QrScanner.route) { entry ->
+                val mapEntry = remember(entry) { navController.getBackStackEntry(Screen.Map.route) }
+                val mapViewModel = hiltViewModel<MapViewModel>(mapEntry)
                 QrScannerScreen(
                     onBack = { navController.popBackStack() },
                     onQrDetected = { code ->
-                        val handle = navController.getBackStackEntry(Screen.Map.route).savedStateHandle
-                        applyQrResult(code, handle)
+                        mapViewModel.handleQrScan(code)
                         navController.popBackStack()
                     },
                 )
@@ -342,25 +336,4 @@ fun AppNavGraph(
     }
 }
 
-internal fun applyQrResult(raw: String, handle: SavedStateHandle) {
-    // Clear any keys not produced by this dispatch so a prior unconsumed scan can't
-    // leak into the new one (e.g. an Unknown scan after a stale rent/return).
-    handle.remove<String>("qr_action")
-    handle.remove<Int>("qr_bike_number")
-    handle.remove<String>("qr_stand_name")
-    handle.remove<String>("qr_unknown_raw")
-    when (val result = parseQrScanResult(raw)) {
-        is QrScanResult.Rent -> {
-            handle["qr_action"] = "rent"
-            handle["qr_bike_number"] = result.bikeNumber
-        }
-        is QrScanResult.Return -> {
-            handle["qr_action"] = "return"
-            handle["qr_stand_name"] = result.standName
-        }
-        QrScanResult.Unknown -> {
-            handle["qr_unknown_raw"] = raw
-        }
-    }
-}
 

@@ -43,6 +43,8 @@
                 <data android:scheme="https" />
                 <data android:host="${scanHost}" />
                 <data android:pathPrefix="/scan.php/" />
+                <data android:pathPattern="/rent/.*" />
+                <data android:pathPattern="/return/.*" />
             </intent-filter>
         </activity>
     </application>

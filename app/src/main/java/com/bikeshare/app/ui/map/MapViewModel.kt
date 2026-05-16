@@ -11,6 +11,8 @@ import com.bikeshare.app.data.api.dto.UserLimitsDto
 import com.bikeshare.app.domain.repository.RentalRepository
 import com.bikeshare.app.domain.repository.StandRepository
 import com.bikeshare.app.notification.FreeTimeNotificationScheduler
+import com.bikeshare.app.ui.scanner.QrScanResult
+import com.bikeshare.app.ui.scanner.parseQrScanResult
 import com.bikeshare.app.util.NetworkResult
 import com.bikeshare.app.util.RentMessageRenderer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +28,10 @@ data class MapUiState(
     val selectedStand: StandMarkerDto? = null,
     val standBikes: List<BikeOnStandDto> = emptyList(),
     val myBikes: List<RentedBikeDto> = emptyList(),
+    // false until /me/bikes has responded at least once. Lets handleQrScan distinguish
+    // "loading" from "no rentals" so a deep-link return doesn't prematurely show the
+    // no-rental dialog while the API call is still in flight.
+    val myBikesLoaded: Boolean = false,
     val limits: UserLimitsDto? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
@@ -34,6 +40,8 @@ data class MapUiState(
     val rentCodeMessage: String? = null,
     val returnCodeInfo: RentSystemResultDto? = null,
     val returnCodeMessage: String? = null,
+    val pendingReturnStand: String? = null,
+    val unknownQrRaw: String? = null,
 )
 
 @HiltViewModel
@@ -87,11 +95,41 @@ class MapViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = rentalRepository.getMyBikes()) {
                 is NetworkResult.Success -> {
-                    _uiState.value = _uiState.value.copy(myBikes = result.data)
+                    _uiState.value = _uiState.value.copy(
+                        myBikes = result.data,
+                        myBikesLoaded = true,
+                    )
+                    resolvePendingReturnIfReady()
                 }
                 is NetworkResult.Error -> Timber.w("Failed to load my bikes: ${result.message}")
                 is NetworkResult.Loading -> {}
             }
+        }
+    }
+
+    fun handleQrScan(raw: String) {
+        when (val result = parseQrScanResult(raw)) {
+            is QrScanResult.Rent -> rentBike(result.bikeNumber)
+            is QrScanResult.Return -> {
+                _uiState.value = _uiState.value.copy(pendingReturnStand = result.standName)
+                resolvePendingReturnIfReady()
+            }
+            QrScanResult.Unknown -> {
+                _uiState.value = _uiState.value.copy(unknownQrRaw = raw)
+            }
+        }
+    }
+
+    // Auto-return when exactly one bike is rented. Called both from handleQrScan (covers
+    // the warm case where myBikes is already loaded) and from loadMyBikes Success (covers
+    // the cold-start race where QR arrives before /me/bikes responds).
+    private fun resolvePendingReturnIfReady() {
+        val state = _uiState.value
+        val stand = state.pendingReturnStand ?: return
+        if (!state.myBikesLoaded) return
+        if (state.myBikes.size == 1) {
+            _uiState.value = state.copy(pendingReturnStand = null)
+            returnBike(state.myBikes.first().bikeNum, stand)
         }
     }
 
@@ -204,5 +242,13 @@ class MapViewModel @Inject constructor(
 
     fun clearReturnCodeInfo() {
         _uiState.value = _uiState.value.copy(returnCodeInfo = null, returnCodeMessage = null)
+    }
+
+    fun clearPendingReturnStand() {
+        _uiState.value = _uiState.value.copy(pendingReturnStand = null)
+    }
+
+    fun clearUnknownQrRaw() {
+        _uiState.value = _uiState.value.copy(unknownQrRaw = null)
     }
 }
