@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 data class AboutUiState(
@@ -54,9 +55,12 @@ class AboutViewModel @Inject constructor(
 
     private fun loadMessengerChats() {
         viewModelScope.launch {
-            val result = authRepository.getMessengerChats()
-            if (result is NetworkResult.Success) {
-                _uiState.update { it.copy(messengerChats = result.data) }
+            when (val result = authRepository.getMessengerChats()) {
+                is NetworkResult.Success ->
+                    _uiState.update { it.copy(messengerChats = result.data) }
+                is NetworkResult.Error ->
+                    Timber.w("Failed to load messenger chats: ${result.message}")
+                is NetworkResult.Loading -> Unit
             }
         }
     }
