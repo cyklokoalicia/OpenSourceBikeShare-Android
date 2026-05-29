@@ -155,6 +155,7 @@
     <string name="about_up_to_date">You have the latest version</string>
     <string name="about_check_failed">Couldn\'t check for updates. Check your connection and try again.</string>
     <string name="about_retry_check">Try again</string>
+    <string name="about_chats_title">Newcomers chats</string>
 
     <!-- API messages from server (rent/return/revert flows). Names mirror server translation codes. -->
     <string name="api_bike_rent_success">Bike #%1$d: Open with code %2$s. Change code immediately to %3$s (open, rotate metal part, set new code, rotate metal part back).</string>
