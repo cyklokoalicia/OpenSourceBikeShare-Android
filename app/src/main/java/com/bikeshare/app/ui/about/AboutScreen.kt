@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -41,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -48,6 +51,8 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.bikeshare.app.BuildConfig
 import com.bikeshare.app.R
+import com.bikeshare.app.domain.model.MessengerChat
+import com.bikeshare.app.domain.model.MessengerIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +79,7 @@ fun AboutScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -127,8 +133,72 @@ fun AboutScreen(
                 subtitle = BuildConfig.WEBSITE_URL,
                 onClick = { openUrl(context, BuildConfig.WEBSITE_URL) },
             )
+
+            if (uiState.messengerChats.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = stringResource(R.string.about_chats_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                )
+                uiState.messengerChats.forEach { chat ->
+                    MessengerChatCard(
+                        chat = chat,
+                        onClick = { openUrl(context, chat.url) },
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun MessengerChatCard(
+    chat: MessengerChat,
+    onClick: () -> Unit,
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(messengerIconDrawable(chat.icon)),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp),
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = chat.name,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+private fun messengerIconDrawable(icon: MessengerIcon): Int = when (icon) {
+    MessengerIcon.TELEGRAM -> R.drawable.ic_messenger_telegram
+    MessengerIcon.WHATSAPP -> R.drawable.ic_messenger_whatsapp
+    MessengerIcon.SIGNAL -> R.drawable.ic_messenger_signal
+    MessengerIcon.VIBER -> R.drawable.ic_messenger_viber
+    MessengerIcon.DISCORD -> R.drawable.ic_messenger_discord
+    MessengerIcon.GENERIC -> R.drawable.ic_messenger_generic
 }
 
 @Composable

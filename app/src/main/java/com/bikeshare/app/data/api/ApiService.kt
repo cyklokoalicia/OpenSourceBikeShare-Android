@@ -22,6 +22,9 @@ interface ApiService {
     @GET("auth/cities")
     suspend fun getCities(): Response<ApiEnvelope<List<String>>>
 
+    @GET("auth/messenger-chats")
+    suspend fun getMessengerChats(): Response<ApiEnvelope<List<MessengerChatDto>>>
+
     // ── User (authenticated) ─────────────────────────────────────────────
     @POST("user/phone-confirm/request")
     suspend fun phoneConfirmRequest(): Response<ApiEnvelope<PhoneConfirmRequestResponse>>

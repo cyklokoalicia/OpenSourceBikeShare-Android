@@ -18,7 +18,8 @@ class AuthInterceptor @Inject constructor(
             path.endsWith("/auth/token") ||
             path.endsWith("/auth/refresh") ||
             path.endsWith("/auth/register") ||
-            path.endsWith("/auth/cities")
+            path.endsWith("/auth/cities") ||
+            path.endsWith("/auth/messenger-chats")
         ) {
             return chain.proceed(request)
         }

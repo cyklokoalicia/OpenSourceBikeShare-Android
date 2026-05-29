@@ -6,6 +6,8 @@ import com.bikeshare.app.data.api.dto.PhoneConfirmVerifyRequest
 import com.bikeshare.app.data.api.dto.RegisterRequest
 import com.bikeshare.app.data.api.dto.TokenRequest
 import com.bikeshare.app.data.local.TokenStorage
+import com.bikeshare.app.domain.model.MessengerChat
+import com.bikeshare.app.domain.model.MessengerIcon
 import com.bikeshare.app.domain.repository.AuthRepository
 import com.bikeshare.app.util.NetworkResult
 import com.bikeshare.app.util.safeApiCall
@@ -52,6 +54,23 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getCities(): NetworkResult<List<String>> =
         safeApiCall(moshi) { api.getCities() }
+
+    override suspend fun getMessengerChats(): NetworkResult<List<MessengerChat>> {
+        val result = safeApiCall(moshi) { api.getMessengerChats() }
+        return when (result) {
+            is NetworkResult.Success -> NetworkResult.Success(
+                result.data.map { dto ->
+                    MessengerChat(
+                        name = dto.name,
+                        url = dto.url,
+                        icon = MessengerIcon.fromSlug(dto.icon),
+                    )
+                }
+            )
+            is NetworkResult.Error -> result
+            is NetworkResult.Loading -> result
+        }
+    }
 
     override suspend fun register(
         fullname: String,

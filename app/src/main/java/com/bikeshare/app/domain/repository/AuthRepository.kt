@@ -1,5 +1,6 @@
 package com.bikeshare.app.domain.repository
 
+import com.bikeshare.app.domain.model.MessengerChat
 import com.bikeshare.app.util.NetworkResult
 
 interface AuthRepository {
@@ -9,6 +10,7 @@ interface AuthRepository {
     suspend fun isLoggedIn(): Boolean
     suspend fun getPhoneConfirmed(): Boolean
     suspend fun getCities(): NetworkResult<List<String>>
+    suspend fun getMessengerChats(): NetworkResult<List<MessengerChat>>
     suspend fun register(
         fullname: String,
         city: String,
