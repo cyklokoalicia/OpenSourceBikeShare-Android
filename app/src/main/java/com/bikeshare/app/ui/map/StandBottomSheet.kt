@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -100,12 +101,27 @@ fun StandBottomSheet(
     }
 }
 
+private val ProblematicBikeContainer = Color(0xFFFFF3CD)
+private val ProblematicBikeContent = Color(0xFF664D03)
+
 @Composable
 private fun BikeItem(
     bike: BikeOnStandDto,
     onRent: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    val hasNotes = !bike.notes.isNullOrBlank()
+    val cardColors = if (hasNotes) {
+        CardDefaults.cardColors(
+            containerColor = ProblematicBikeContainer,
+            contentColor = ProblematicBikeContent,
+        )
+    } else {
+        CardDefaults.cardColors()
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = cardColors,
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,7 +136,7 @@ private fun BikeItem(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.DirectionsBike,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (hasNotes) ProblematicBikeContent else MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -139,13 +155,13 @@ private fun BikeItem(
                                 imageVector = Icons.Default.Warning,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp).padding(top = 2.dp),
-                                tint = MaterialTheme.colorScheme.error,
+                                tint = ProblematicBikeContent,
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = note,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.error,
+                                color = ProblematicBikeContent,
                                 modifier = Modifier.weight(1f, fill = true),
                             )
                         }
