@@ -144,6 +144,19 @@
     <string name="update_available">New version %1$s available</string>
     <string name="update_download">Download</string>
 
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System default</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_slovak">Slovenčina</string>
+    <string name="settings_language_ukrainian">Українська</string>
+    <string name="settings_language_changed">Language updated</string>
+
     <!-- About screen -->
     <string name="about_title">About</string>
     <string name="about_menu">About</string>

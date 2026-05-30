@@ -144,6 +144,19 @@
     <string name="update_available">Доступна нова версія %1$s</string>
     <string name="update_download">Завантажити</string>
 
+    <!-- Settings screen -->
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Як у системі</string>
+    <string name="settings_theme_light">Світла</string>
+    <string name="settings_theme_dark">Темна</string>
+    <string name="settings_language">Мова</string>
+    <string name="settings_language_system">Системна</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_slovak">Slovenčina</string>
+    <string name="settings_language_ukrainian">Українська</string>
+    <string name="settings_language_changed">Мову змінено</string>
+
     <!-- About screen -->
     <string name="about_title">Про додаток</string>
     <string name="about_menu">Про додаток</string>

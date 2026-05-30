@@ -40,6 +40,7 @@ import com.bikeshare.app.ui.map.MapViewModel
 import com.bikeshare.app.ui.rental.RentalScreen
 import com.bikeshare.app.ui.about.AboutScreen
 import com.bikeshare.app.ui.profile.ProfileScreen
+import com.bikeshare.app.ui.settings.SettingsScreen
 import com.bikeshare.app.ui.credit.CreditScreen
 import com.bikeshare.app.ui.credithistory.CreditHistoryScreen
 import com.bikeshare.app.ui.trips.TripsScreen
@@ -242,6 +243,7 @@ fun AppNavGraph(
                     onNavigateToCreditHistory = { navController.navigate(Screen.CreditHistory.route) },
                     onNavigateToTrips = { navController.navigate(Screen.Trips.route) },
                     onNavigateToAbout = { navController.navigate(Screen.About.route) },
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                     onLogout = {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
@@ -264,6 +266,10 @@ fun AppNavGraph(
 
             composable(Screen.About.route) {
                 AboutScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Screen.Settings.route) {
+                SettingsScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Screen.QrScanner.route) { entry ->

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ fun ProfileScreen(
     onNavigateToCreditHistory: () -> Unit,
     onNavigateToTrips: () -> Unit,
     onNavigateToAbout: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onLogout: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -46,6 +48,9 @@ fun ProfileScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.nav_profile)) },
                 actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings_title))
+                    }
                     IconButton(onClick = { viewModel.logout() }) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = stringResource(R.string.logout))
                     }
@@ -144,6 +149,15 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(stringResource(R.string.recent_trips))
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = onNavigateToSettings,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.settings_title))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
