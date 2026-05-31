@@ -2,6 +2,7 @@ package com.bikeshare.app.di
 
 import android.content.Context
 import com.bikeshare.app.data.local.TokenStorage
+import com.bikeshare.app.data.local.UserPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,5 +18,11 @@ object AppModule {
     @Singleton
     fun provideTokenStorage(@ApplicationContext context: Context): TokenStorage {
         return TokenStorage(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
+        return UserPreferences(context)
     }
 }

@@ -144,6 +144,19 @@
     <string name="update_available">Je dostupná nová verzia %1$s</string>
     <string name="update_download">Stiahnuť</string>
 
+    <!-- Settings screen -->
+    <string name="settings_title">Nastavenia</string>
+    <string name="settings_theme">Téma</string>
+    <string name="settings_theme_system">Podľa systému</string>
+    <string name="settings_theme_light">Svetlá</string>
+    <string name="settings_theme_dark">Tmavá</string>
+    <string name="settings_language">Jazyk</string>
+    <string name="settings_language_system">Systémový</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_slovak">Slovenčina</string>
+    <string name="settings_language_ukrainian">Українська</string>
+    <string name="settings_language_changed">Jazyk bol zmenený</string>
+
     <!-- About screen -->
     <string name="about_title">O aplikácii</string>
     <string name="about_menu">O aplikácii</string>
