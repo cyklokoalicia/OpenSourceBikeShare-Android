@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bikeshare.app.R
 import com.bikeshare.app.notification.FreeTimeNotificationWorker
+import com.bikeshare.app.util.SessionEvent
 import com.bikeshare.app.ui.auth.LoginScreen
 import com.bikeshare.app.ui.auth.PhoneVerifyScreen
 import com.bikeshare.app.ui.auth.RegisterScreen
@@ -86,6 +87,23 @@ fun AppNavGraph(
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // The server gates unconfirmed-phone users with a 403 phone_unconfirmed (spec 0001);
+    // the network layer surfaces it as a SessionEvent. Route to the verify screen
+    // reactively, from wherever the user is.
+    LaunchedEffect(Unit) {
+        appViewModel.sessionEvents.collect { event ->
+            when (event) {
+                SessionEvent.PhoneUnconfirmed -> {
+                    if (navController.currentDestination?.route != Screen.PhoneVerify.route) {
+                        navController.navigate(Screen.PhoneVerify.route) {
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            }
+        }
     }
 
     LaunchedEffect(navigateTo) {
@@ -201,10 +219,8 @@ fun AppNavGraph(
         ) {
             composable(Screen.Login.route) {
                 LoginScreen(
-                    onLoginSuccess = { phoneConfirmed ->
-                        navController.navigate(
-                            if (phoneConfirmed) Screen.Map.route else Screen.PhoneVerify.route,
-                        ) {
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Map.route) {
                             popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     },

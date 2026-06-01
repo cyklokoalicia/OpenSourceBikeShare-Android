@@ -13,7 +13,6 @@ import javax.inject.Inject
 data class LoginUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val phoneConfirmed: Boolean = true,
     val error: String? = null,
 )
 
@@ -32,8 +31,7 @@ class LoginViewModel @Inject constructor(
     private fun checkExistingSession() {
         viewModelScope.launch {
             if (authRepository.isLoggedIn()) {
-                val phoneConfirmed = authRepository.getPhoneConfirmed()
-                _uiState.value = LoginUiState(isSuccess = true, phoneConfirmed = phoneConfirmed)
+                _uiState.value = LoginUiState(isSuccess = true)
             }
         }
     }
@@ -43,10 +41,7 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState(isLoading = true)
             when (val result = authRepository.login(number, password)) {
                 is NetworkResult.Success -> {
-                    _uiState.value = LoginUiState(
-                        isSuccess = true,
-                        phoneConfirmed = result.data,
-                    )
+                    _uiState.value = LoginUiState(isSuccess = true)
                 }
                 is NetworkResult.Error -> {
                     _uiState.value = LoginUiState(error = result.message)

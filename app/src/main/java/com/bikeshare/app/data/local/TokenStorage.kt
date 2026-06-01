@@ -31,18 +31,15 @@ class TokenStorage @Inject constructor(
     companion object {
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
-        private const val KEY_PHONE_CONFIRMED = "phone_confirmed"
     }
 
     fun saveTokens(
         accessToken: String,
         refreshToken: String,
-        phoneConfirmed: Boolean = true,
     ) {
         prefs.edit()
             .putString(KEY_ACCESS_TOKEN, accessToken)
             .putString(KEY_REFRESH_TOKEN, refreshToken)
-            .putBoolean(KEY_PHONE_CONFIRMED, phoneConfirmed)
             .apply()
     }
 
@@ -50,17 +47,10 @@ class TokenStorage @Inject constructor(
 
     fun getRefreshToken(): String? = prefs.getString(KEY_REFRESH_TOKEN, null)
 
-    fun getPhoneConfirmed(): Boolean = prefs.getBoolean(KEY_PHONE_CONFIRMED, true)
-
-    fun setPhoneConfirmed(confirmed: Boolean) {
-        prefs.edit().putBoolean(KEY_PHONE_CONFIRMED, confirmed).apply()
-    }
-
     fun clearTokens() {
         prefs.edit()
             .remove(KEY_ACCESS_TOKEN)
             .remove(KEY_REFRESH_TOKEN)
-            .remove(KEY_PHONE_CONFIRMED)
             .apply()
     }
 

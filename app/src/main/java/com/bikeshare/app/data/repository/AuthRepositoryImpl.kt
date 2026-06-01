@@ -20,24 +20,20 @@ class AuthRepositoryImpl @Inject constructor(
     private val moshi: Moshi,
 ) : AuthRepository {
 
-    override suspend fun login(number: String, password: String): NetworkResult<Boolean> {
+    override suspend fun login(number: String, password: String): NetworkResult<Unit> {
         val result = safeApiCall(moshi) { api.login(TokenRequest(number, password)) }
         return when (result) {
             is NetworkResult.Success -> {
-                val phoneConfirmed = result.data.phoneConfirmed != false
                 tokenStorage.saveTokens(
                     result.data.accessToken,
                     result.data.refreshToken,
-                    phoneConfirmed,
                 )
-                NetworkResult.Success(phoneConfirmed)
+                NetworkResult.Success(Unit)
             }
             is NetworkResult.Error -> result
             is NetworkResult.Loading -> result
         }
     }
-
-    override suspend fun getPhoneConfirmed(): Boolean = tokenStorage.getPhoneConfirmed()
 
     override suspend fun logout(): NetworkResult<Unit> {
         val refreshToken = tokenStorage.getRefreshToken()
