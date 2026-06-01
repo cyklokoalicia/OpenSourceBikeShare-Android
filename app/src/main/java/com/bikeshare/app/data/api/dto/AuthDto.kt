@@ -23,7 +23,6 @@ data class LogoutRequest(
 data class AuthTokens(
     @Json(name = "accessToken") val accessToken: String,
     @Json(name = "refreshToken") val refreshToken: String,
-    @Json(name = "phoneConfirmed") val phoneConfirmed: Boolean? = null,
 )
 
 @JsonClass(generateAdapter = true)

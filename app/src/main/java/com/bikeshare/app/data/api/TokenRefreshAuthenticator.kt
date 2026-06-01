@@ -35,7 +35,6 @@ class TokenRefreshAuthenticator @Inject constructor(
             tokenStorage.saveTokens(
                 newTokens.accessToken,
                 newTokens.refreshToken,
-                newTokens.phoneConfirmed != false,
             )
             response.request.newBuilder()
                 .header("Authorization", "Bearer ${newTokens.accessToken}")

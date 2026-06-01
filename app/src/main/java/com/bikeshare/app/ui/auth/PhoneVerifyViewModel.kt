@@ -2,7 +2,6 @@ package com.bikeshare.app.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bikeshare.app.data.local.TokenStorage
 import com.bikeshare.app.domain.repository.AuthRepository
 import com.bikeshare.app.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +22,6 @@ data class PhoneVerifyUiState(
 @HiltViewModel
 class PhoneVerifyViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenStorage: TokenStorage,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PhoneVerifyUiState())
@@ -60,7 +58,6 @@ class PhoneVerifyViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             when (val result = authRepository.verifyPhoneConfirm(sanitized, checkCode)) {
                 is NetworkResult.Success -> {
-                    tokenStorage.setPhoneConfirmed(true)
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         isSuccess = true,

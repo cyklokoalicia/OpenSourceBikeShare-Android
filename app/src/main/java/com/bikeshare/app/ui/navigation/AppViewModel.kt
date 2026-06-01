@@ -9,9 +9,12 @@ import com.bikeshare.app.domain.update.UpdateChecker
 import com.bikeshare.app.domain.update.UpdateInfo
 import com.bikeshare.app.notification.FreeTimeNotificationScheduler
 import com.bikeshare.app.util.NetworkResult
+import com.bikeshare.app.util.SessionEvent
+import com.bikeshare.app.util.SessionEventBus
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -22,7 +25,11 @@ class AppViewModel @Inject constructor(
     @ApplicationContext private val appContext: Context,
     private val rentalRepository: RentalRepository,
     private val updateChecker: UpdateChecker,
+    sessionEventBus: SessionEventBus,
 ) : ViewModel() {
+
+    /** Session events surfaced from the network layer (e.g. phone-unconfirmed gate). */
+    val sessionEvents: SharedFlow<SessionEvent> = sessionEventBus.events
 
     private val _isAdmin = MutableStateFlow(false)
     val isAdmin: StateFlow<Boolean> = _isAdmin.asStateFlow()

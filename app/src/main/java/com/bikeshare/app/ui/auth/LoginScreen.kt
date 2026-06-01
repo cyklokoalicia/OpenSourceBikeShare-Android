@@ -27,7 +27,7 @@ import com.bikeshare.app.R
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (phoneConfirmed: Boolean) -> Unit,
+    onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit = {},
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -39,7 +39,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onLoginSuccess(uiState.phoneConfirmed)
+            onLoginSuccess()
         }
     }
 
