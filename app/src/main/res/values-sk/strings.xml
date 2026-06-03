@@ -143,6 +143,8 @@
     <!-- Update notification -->
     <string name="update_available">Je dostupná nová verzia %1$s</string>
     <string name="update_download">Stiahnuť</string>
+    <string name="force_update_title">Vyžaduje sa aktualizácia</string>
+    <string name="force_update_message">Táto verzia aplikácie už nie je podporovaná. Pre pokračovanie ju prosím aktualizujte.</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Nastavenia</string>
