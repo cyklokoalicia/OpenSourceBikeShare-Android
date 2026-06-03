@@ -1,5 +1,6 @@
 package com.bikeshare.app.ui.map
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +28,7 @@ fun StandBottomSheet(
     myBikes: List<RentedBikeDto>,
     onRentBike: (Int) -> Unit,
     onReturnBike: (Int) -> Unit,
+    onBikeClick: ((Int) -> Unit)? = null,
 ) {
     Column(
         modifier = Modifier
@@ -92,7 +94,11 @@ fun StandBottomSheet(
                 modifier = Modifier.heightIn(max = 300.dp),
             ) {
                 items(bikes) { bike ->
-                    BikeItem(bike = bike, onRent = { onRentBike(bike.bikeNum) })
+                    BikeItem(
+                        bike = bike,
+                        onRent = { onRentBike(bike.bikeNum) },
+                        onClick = onBikeClick?.let { click -> { click(bike.bikeNum) } },
+                    )
                 }
             }
         }
@@ -108,6 +114,7 @@ private val ProblematicBikeContent = Color(0xFF664D03)
 private fun BikeItem(
     bike: BikeOnStandDto,
     onRent: () -> Unit,
+    onClick: (() -> Unit)? = null,
 ) {
     val hasNotes = !bike.notes.isNullOrBlank()
     val cardColors = if (hasNotes) {
@@ -118,8 +125,13 @@ private fun BikeItem(
     } else {
         CardDefaults.cardColors()
     }
+    // The whole row navigates to the bike detail when a handler is supplied (admins only,
+    // spec 0006); the Rent button keeps its own click. Non-admins get a null handler and
+    // a non-clickable card — the normal-user experience is unchanged.
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         colors = cardColors,
     ) {
         Row(

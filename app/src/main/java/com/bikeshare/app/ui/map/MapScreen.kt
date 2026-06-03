@@ -41,6 +41,7 @@ fun MapScreen(
     onScanQr: () -> Unit,
     pendingQrUrl: String? = null,
     onQrConsumed: () -> Unit = {},
+    onBikeClick: ((Int) -> Unit)? = null,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -219,6 +220,12 @@ fun MapScreen(
                     onReturnBike = { bikeNumber ->
                         viewModel.returnBike(bikeNumber, selectedStand.standName)
                         showBottomSheet = false
+                    },
+                    onBikeClick = onBikeClick?.let { click ->
+                        { bikeNumber ->
+                            showBottomSheet = false
+                            click(bikeNumber)
+                        }
                     },
                 )
             }

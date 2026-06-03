@@ -28,3 +28,16 @@ sealed class Screen(val route: String) {
     data object AdminCoupons : Screen("admin/coupons")
     data object AdminReports : Screen("admin/reports")
 }
+
+/**
+ * Click handler for a bike row in a stand's bike list (spec 0006): for an admin it opens
+ * that bike's detail; for a non-admin it is `null`, so the row stays non-actionable. The
+ * UI treats a null handler as "not tappable" (no ripple), keeping the normal-user
+ * experience unchanged.
+ */
+fun adminBikeClick(isAdmin: Boolean, onNavigate: (String) -> Unit): ((Int) -> Unit)? =
+    if (isAdmin) {
+        { bikeNumber -> onNavigate(Screen.AdminBikeDetail.createRoute(bikeNumber)) }
+    } else {
+        null
+    }
