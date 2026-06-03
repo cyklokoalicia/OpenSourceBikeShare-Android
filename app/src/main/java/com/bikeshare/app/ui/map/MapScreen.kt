@@ -223,7 +223,11 @@ fun MapScreen(
                     },
                     onBikeClick = onBikeClick?.let { click ->
                         { bikeNumber ->
+                            // Navigating away from the map: dismiss like onDismissRequest
+                            // (clear the stale stand selection/bike list), then open detail.
+                            // Unlike rent/return, we don't stay to refresh, so clearing is safe.
                             showBottomSheet = false
+                            viewModel.clearSelectedStand()
                             click(bikeNumber)
                         }
                     },
