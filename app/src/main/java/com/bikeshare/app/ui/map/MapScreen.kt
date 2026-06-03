@@ -41,6 +41,7 @@ fun MapScreen(
     onScanQr: () -> Unit,
     pendingQrUrl: String? = null,
     onQrConsumed: () -> Unit = {},
+    onBikeClick: ((Int) -> Unit)? = null,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -219,6 +220,16 @@ fun MapScreen(
                     onReturnBike = { bikeNumber ->
                         viewModel.returnBike(bikeNumber, selectedStand.standName)
                         showBottomSheet = false
+                    },
+                    onBikeClick = onBikeClick?.let { click ->
+                        { bikeNumber ->
+                            // Navigating away from the map: dismiss like onDismissRequest
+                            // (clear the stale stand selection/bike list), then open detail.
+                            // Unlike rent/return, we don't stay to refresh, so clearing is safe.
+                            showBottomSheet = false
+                            viewModel.clearSelectedStand()
+                            click(bikeNumber)
+                        }
                     },
                 )
             }

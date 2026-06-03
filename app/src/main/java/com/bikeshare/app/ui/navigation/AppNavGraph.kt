@@ -259,6 +259,9 @@ fun AppNavGraph(
                     onScanQr = { navController.navigate(Screen.QrScanner.route) },
                     pendingQrUrl = pendingQrUrl,
                     onQrConsumed = onQrConsumed,
+                    // Admins can tap a bike in a stand to open its detail (spec 0006);
+                    // non-admins get a null handler and the row stays non-actionable.
+                    onBikeClick = adminBikeClick(isAdmin) { route -> navController.navigate(route) },
                 )
             }
 
