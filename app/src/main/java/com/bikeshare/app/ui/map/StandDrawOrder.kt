@@ -2,9 +2,13 @@ package com.bikeshare.app.ui.map
 
 import com.bikeshare.app.data.api.dto.StandMarkerDto
 
-/** Stand statuses that render as non-rideable "background" markers (service / testing). */
-private const val STATUS_TECHNICAL = "technical"
-private const val STATUS_HIDDEN = "hidden"
+/**
+ * Stand statuses that render as non-rideable "background" markers (service / testing).
+ * Shared within the map UI (also used by MapScreen's marker styling) so the status
+ * vocabulary lives in one place here.
+ */
+internal const val STATUS_TECHNICAL = "technical"
+internal const val STATUS_HIDDEN = "hidden"
 
 /**
  * Map layer for a stand by status (spec 0010): service ("technical") and testing
@@ -17,7 +21,10 @@ internal fun standDrawLayer(status: String?): Int =
 /**
  * Orders stands for map drawing: lower layers first. osmdroid draws later-added overlays
  * on top, so service/testing markers (layer 0) are added before — and sit below —
- * active markers (layer 1). Stable: fetch order is preserved within each layer.
+ * active markers (layer 1). A stable partition (not a sort) preserves fetch order within
+ * each layer in O(n), since there are only two layers.
  */
-fun standsInDrawOrder(stands: List<StandMarkerDto>): List<StandMarkerDto> =
-    stands.sortedBy { standDrawLayer(it.status) }
+fun standsInDrawOrder(stands: List<StandMarkerDto>): List<StandMarkerDto> {
+    val (background, foreground) = stands.partition { standDrawLayer(it.status) == 0 }
+    return background + foreground
+}

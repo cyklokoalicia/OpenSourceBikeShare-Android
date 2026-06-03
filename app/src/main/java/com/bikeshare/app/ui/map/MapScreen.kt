@@ -166,8 +166,8 @@ fun MapScreen(
                     // Draw service/testing stands first so active stands stay on top (spec 0010).
                     standsInDrawOrder(uiState.stands).forEach { stand ->
                         val (markerColor, label, statusLabel) = when (stand.status) {
-                            "technical" -> Triple(AndroidColor.parseColor("#FF9800"), "S", serviceStandLabel)
-                            "hidden" -> Triple(AndroidColor.parseColor("#9C27B0"), "H", hiddenStandLabel)
+                            STATUS_TECHNICAL -> Triple(AndroidColor.parseColor("#FF9800"), "S", serviceStandLabel)
+                            STATUS_HIDDEN -> Triple(AndroidColor.parseColor("#9C27B0"), "H", hiddenStandLabel)
                             else -> {
                                 val bikes = stand.bikeCount ?: 0
                                 val color = if (bikes > 0) AndroidColor.parseColor("#4CAF50") else AndroidColor.parseColor("#F44336")
