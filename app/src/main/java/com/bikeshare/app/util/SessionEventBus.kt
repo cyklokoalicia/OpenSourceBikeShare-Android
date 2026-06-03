@@ -10,6 +10,12 @@ import javax.inject.Singleton
 sealed interface SessionEvent {
     /** The server rejected a request because the user's phone is not confirmed. */
     data object PhoneUnconfirmed : SessionEvent
+
+    /**
+     * The server rejected a request with `426 Upgrade Required` because the client is
+     * below the configured minimum supported version (spec 0005). The UI must block.
+     */
+    data object UpdateRequired : SessionEvent
 }
 
 /**

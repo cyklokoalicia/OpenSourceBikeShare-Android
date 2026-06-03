@@ -143,6 +143,8 @@
     <!-- Update notification -->
     <string name="update_available">New version %1$s available</string>
     <string name="update_download">Download</string>
+    <string name="force_update_title">Update required</string>
+    <string name="force_update_message">This version of the app is no longer supported. Please update to continue.</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>

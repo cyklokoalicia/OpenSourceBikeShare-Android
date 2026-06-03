@@ -42,6 +42,7 @@ import com.bikeshare.app.ui.rental.RentalScreen
 import com.bikeshare.app.ui.about.AboutScreen
 import com.bikeshare.app.ui.profile.ProfileScreen
 import com.bikeshare.app.ui.settings.SettingsScreen
+import com.bikeshare.app.ui.update.ForceUpdateScreen
 import com.bikeshare.app.ui.credit.CreditScreen
 import com.bikeshare.app.ui.credithistory.CreditHistoryScreen
 import com.bikeshare.app.ui.trips.TripsScreen
@@ -75,6 +76,7 @@ fun AppNavGraph(
     val currentDestination = navBackStackEntry?.destination
     val isAdmin by appViewModel.isAdmin.collectAsStateWithLifecycle(initialValue = false)
     val updateInfo by appViewModel.updateInfo.collectAsStateWithLifecycle(initialValue = null)
+    val forceUpdateUrl by appViewModel.forceUpdateUrl.collectAsStateWithLifecycle(initialValue = null)
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -87,6 +89,14 @@ fun AppNavGraph(
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // Below the minimum supported version (spec 0005): the server returned 426 and the
+    // network layer surfaced it as a SessionEvent. Block everything with the force-update
+    // screen — it supersedes the whole nav graph and bottom bar.
+    forceUpdateUrl?.let { url ->
+        ForceUpdateScreen(releaseUrl = url)
+        return
     }
 
     // The server gates unconfirmed-phone users with a 403 phone_unconfirmed (spec 0001);
@@ -102,6 +112,9 @@ fun AppNavGraph(
                         }
                     }
                 }
+                // UpdateRequired is handled by AppViewModel (sets forceUpdateUrl, which
+                // blocks above via ForceUpdateScreen); no navigation needed here.
+                SessionEvent.UpdateRequired -> Unit
             }
         }
     }

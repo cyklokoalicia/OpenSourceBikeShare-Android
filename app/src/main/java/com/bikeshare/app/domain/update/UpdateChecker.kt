@@ -56,6 +56,23 @@ class UpdateChecker @Inject constructor(
         }
     }
 
+    /**
+     * The latest published GitHub release page URL, or null if the check is disabled or
+     * the fetch fails. Used by the force-update gate (spec 0005) as the download target —
+     * the server's `426` carries no URL, so the app sources it from GitHub like the soft
+     * update. Ignores the 24h throttle: the gate needs a target on demand.
+     */
+    suspend fun latestReleaseUrl(): String? {
+        if (BuildConfig.UPDATE_CHECK_URL.isBlank()) return null
+        val release = runCatching { api.getLatestRelease(BuildConfig.UPDATE_CHECK_URL) }
+            .onFailure { Timber.w(it, "Latest-release fetch threw") }
+            .getOrNull()
+            ?.takeIf { it.isSuccessful }
+            ?.body()
+            ?: return null
+        return release.htmlUrl
+    }
+
     private fun shouldCheckNow(): Boolean {
         val lastCheck = prefs.getLong(KEY_LAST_CHECK, 0L)
         return System.currentTimeMillis() - lastCheck >= CHECK_INTERVAL_MILLIS

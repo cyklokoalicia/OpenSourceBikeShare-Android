@@ -5,6 +5,7 @@ import com.bikeshare.app.data.api.ApiService
 import com.bikeshare.app.data.api.AuthInterceptor
 import com.bikeshare.app.data.api.PhoneUnconfirmedInterceptor
 import com.bikeshare.app.data.api.TokenRefreshAuthenticator
+import com.bikeshare.app.data.api.UpgradeRequiredInterceptor
 import com.squareup.moshi.Moshi
 import io.sentry.okhttp.SentryOkHttpInterceptor
 import dagger.Module
@@ -31,6 +32,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
         phoneUnconfirmedInterceptor: PhoneUnconfirmedInterceptor,
+        upgradeRequiredInterceptor: UpgradeRequiredInterceptor,
         tokenRefreshAuthenticator: TokenRefreshAuthenticator,
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
@@ -42,6 +44,7 @@ object NetworkModule {
             }
             .addInterceptor(authInterceptor)
             .addInterceptor(phoneUnconfirmedInterceptor)
+            .addInterceptor(upgradeRequiredInterceptor)
             .authenticator(tokenRefreshAuthenticator)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

@@ -3,6 +3,7 @@ package com.bikeshare.app.ui.navigation
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bikeshare.app.BuildConfig
 import com.bikeshare.app.domain.repository.RentalRepository
 import com.bikeshare.app.domain.update.UpdateCheckResult
 import com.bikeshare.app.domain.update.UpdateChecker
@@ -36,6 +37,30 @@ class AppViewModel @Inject constructor(
 
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     val updateInfo: StateFlow<UpdateInfo?> = _updateInfo.asStateFlow()
+
+    /**
+     * Non-null (a download URL) once the server has rejected a request with `426 Upgrade
+     * Required` (spec 0005); the UI then blocks with the force-update screen. The gate is
+     * server-enforced — we only react to it here. Once set it stays until the process
+     * restarts on a new version.
+     */
+    private val _forceUpdateUrl = MutableStateFlow<String?>(null)
+    val forceUpdateUrl: StateFlow<String?> = _forceUpdateUrl.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            sessionEventBus.events.collect { event ->
+                if (event is SessionEvent.UpdateRequired) onUpdateRequired()
+            }
+        }
+    }
+
+    private suspend fun onUpdateRequired() {
+        if (_forceUpdateUrl.value != null) return
+        // The 426 carries no URL — the download target is the latest GitHub release,
+        // same source as the soft update. Fall back to the website if that fetch fails.
+        _forceUpdateUrl.value = updateChecker.latestReleaseUrl() ?: BuildConfig.WEBSITE_URL
+    }
 
     fun checkForUpdate() {
         viewModelScope.launch {

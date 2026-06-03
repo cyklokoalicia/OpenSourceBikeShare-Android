@@ -143,6 +143,8 @@
     <!-- Update notification -->
     <string name="update_available">Доступна нова версія %1$s</string>
     <string name="update_download">Завантажити</string>
+    <string name="force_update_title">Потрібне оновлення</string>
+    <string name="force_update_message">Ця версія застосунку більше не підтримується. Щоб продовжити, оновіть її.</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Налаштування</string>
