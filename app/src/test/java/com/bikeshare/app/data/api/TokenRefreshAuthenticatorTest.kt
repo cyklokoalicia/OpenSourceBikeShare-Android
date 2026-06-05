@@ -15,24 +15,22 @@ class TokenRefreshAuthenticatorTest {
     private val serverAndroidUaPattern = Regex("""^.+-Android/(\d+\.\d+\.\d+)\s*\(\d+\)$""")
 
     @Test
-    fun `a release-style refresh User-Agent is parseable by the server version gate`() {
+    fun `a release-style User-Agent is parseable by the server version gate`() {
         // A clean release version must match the server pattern, so the gate reads the real
         // version instead of falling back to "0.0.0" (→ 426). Uses a fixed release version so
         // the test does not depend on the build's versionName (which may carry a -debug suffix).
-        assertTrue(
-            serverAndroidUaPattern.matches(TokenRefreshAuthenticator.userAgent("1.1.6", 125)),
-        )
+        assertTrue(serverAndroidUaPattern.matches(ApiUserAgent.format("1.1.6", 125)))
     }
 
     @Test
-    fun `refresh sends the app User-Agent, not okhttp's default`() {
+    fun `the app User-Agent is not okhttp's default`() {
         // The bug (spec 0015): the bare refresh client sent the default `okhttp/…` UA, which
-        // the server reads as "0.0.0" and rejects with 426. The refresh UA must be the app's.
+        // the server reads as "0.0.0" and rejects with 426. The shared UA must be the app's.
         assertTrue(
-            "Refresh UA '${TokenRefreshAuthenticator.USER_AGENT}' must be the app UA, not okhttp's default",
-            TokenRefreshAuthenticator.USER_AGENT.contains("-Android/"),
+            "UA '${ApiUserAgent.value}' must be the app UA, not okhttp's default",
+            ApiUserAgent.value.contains("-Android/"),
         )
-        assertFalse(TokenRefreshAuthenticator.USER_AGENT.startsWith("okhttp/"))
+        assertFalse(ApiUserAgent.value.startsWith("okhttp/"))
     }
 
     @Test

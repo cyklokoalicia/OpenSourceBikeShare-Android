@@ -1,6 +1,5 @@
 package com.bikeshare.app.data.api
 
-import com.bikeshare.app.BuildConfig
 import com.bikeshare.app.data.api.dto.ApiEnvelope
 import com.bikeshare.app.data.api.dto.AuthTokens
 import com.bikeshare.app.data.api.dto.RefreshRequest
@@ -33,12 +32,10 @@ class TokenRefreshAuthenticator @Inject constructor(
         // Only retry once
         if (response.request.header("X-Retry") != null) return null
 
-        val refreshToken = tokenStorage.getRefreshToken()
-        if (refreshToken == null) {
-            // No refresh token at all → the session is genuinely gone.
-            endSession()
-            return null
-        }
+        // No refresh token → there is no session to refresh or expire (tokens are saved and
+        // cleared as a pair, so this means "not logged in"). Let the 401 surface as-is; the
+        // login flow handles it. Only a *rejected* refresh token (below) ends a live session.
+        val refreshToken = tokenStorage.getRefreshToken() ?: return null
 
         val refresh = runRefresh(refreshToken, response.request.url)
 
@@ -98,11 +95,11 @@ class TokenRefreshAuthenticator @Inject constructor(
             .toJson(RefreshRequest(refreshToken))
         return Request.Builder()
             .url(originalUrl.newBuilder().encodedPath(REFRESH_PATH).build())
-            // The refresh runs on a bare client (no shared interceptors), so it must carry
-            // the same version User-Agent the main client sends — otherwise the server's
-            // force-update gate (spec 0005) reads it as "0.0.0" and returns 426, which would
-            // wipe the session on every token expiry (spec 0015).
-            .header("User-Agent", USER_AGENT)
+            // The refresh runs on a bare client (no shared interceptors), so it must carry the
+            // same version User-Agent the main client sends ([ApiUserAgent], the single source
+            // of truth) — otherwise the server's force-update gate (spec 0005) reads it as
+            // "0.0.0" and returns 426, which would wipe the session on every refresh (spec 0015).
+            .header("User-Agent", ApiUserAgent.value)
             .post(refreshBody.toRequestBody("application/json".toMediaType()))
             .build()
     }
@@ -113,12 +110,6 @@ class TokenRefreshAuthenticator @Inject constructor(
 
     companion object {
         private const val REFRESH_PATH = "/api/v1/auth/refresh"
-
-        /** Same format the main client sends (`NetworkModule`), so the version gate sees the real version. */
-        fun userAgent(versionName: String, versionCode: Int): String =
-            "${BuildConfig.APP_NAME}-Android/$versionName ($versionCode)"
-
-        val USER_AGENT: String = userAgent(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
 
         /**
          * Map a refresh attempt to what we do with the session:

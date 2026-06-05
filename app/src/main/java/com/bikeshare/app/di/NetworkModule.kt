@@ -2,6 +2,7 @@ package com.bikeshare.app.di
 
 import com.bikeshare.app.BuildConfig
 import com.bikeshare.app.data.api.ApiService
+import com.bikeshare.app.data.api.ApiUserAgent
 import com.bikeshare.app.data.api.AuthInterceptor
 import com.bikeshare.app.data.api.PhoneUnconfirmedInterceptor
 import com.bikeshare.app.data.api.TokenRefreshAuthenticator
@@ -38,7 +39,7 @@ object NetworkModule {
         val builder = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
-                    .header("User-Agent", "${BuildConfig.APP_NAME}-Android/${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+                    .header("User-Agent", ApiUserAgent.value)
                     .build()
                 chain.proceed(request)
             }
