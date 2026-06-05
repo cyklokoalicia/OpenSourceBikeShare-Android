@@ -16,6 +16,13 @@ sealed interface SessionEvent {
      * below the configured minimum supported version (spec 0005). The UI must block.
      */
     data object UpdateRequired : SessionEvent
+
+    /**
+     * The session is genuinely gone — the refresh token was rejected (or absent), so the
+     * stored tokens were cleared (spec 0015). The UI must route to the login screen
+     * instead of looping on token-less "Authentication required" responses.
+     */
+    data object SessionExpired : SessionEvent
 }
 
 /**

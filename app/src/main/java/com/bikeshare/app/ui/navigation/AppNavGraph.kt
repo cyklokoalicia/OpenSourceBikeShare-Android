@@ -115,6 +115,16 @@ fun AppNavGraph(
                 // UpdateRequired is handled by AppViewModel (sets forceUpdateUrl, which
                 // blocks above via ForceUpdateScreen); no navigation needed here.
                 SessionEvent.UpdateRequired -> Unit
+                // The session was wiped (refresh token rejected/absent, spec 0015) — route
+                // to login and clear the back stack instead of looping on token-less calls.
+                SessionEvent.SessionExpired -> {
+                    if (navController.currentDestination?.route != Screen.Login.route) {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
             }
         }
     }
