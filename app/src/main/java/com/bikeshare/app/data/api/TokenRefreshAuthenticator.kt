@@ -110,6 +110,9 @@ class TokenRefreshAuthenticator @Inject constructor(
 
     companion object {
         private const val REFRESH_PATH = "/api/v1/auth/refresh"
+        private const val HTTP_UNAUTHORIZED = 401
+        private const val HTTP_FORBIDDEN = 403
+        private const val HTTP_UPGRADE_REQUIRED = 426
 
         /**
          * Map a refresh attempt to what we do with the session:
@@ -121,8 +124,8 @@ class TokenRefreshAuthenticator @Inject constructor(
          */
         fun decideOutcome(code: Int?, tokens: AuthTokens?): Outcome = when {
             tokens != null -> Outcome.RETRY
-            code == 401 || code == 403 -> Outcome.LOGOUT
-            code == 426 -> Outcome.UPGRADE
+            code == HTTP_UNAUTHORIZED || code == HTTP_FORBIDDEN -> Outcome.LOGOUT
+            code == HTTP_UPGRADE_REQUIRED -> Outcome.UPGRADE
             else -> Outcome.KEEP
         }
     }
