@@ -1,5 +1,6 @@
 package com.bikeshare.app.util
 
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -32,7 +33,15 @@ sealed interface SessionEvent {
  */
 @Singleton
 class SessionEventBus @Inject constructor() {
-    private val _events = MutableSharedFlow<SessionEvent>(extraBufferCapacity = 1)
+    // DROP_OLDEST with a roomy buffer so tryEmit() never silently fails under back-pressure:
+    // critical events (notably SessionExpired, which the UI relies on to route to login once
+    // tokens are cleared) are buffered for the active collectors rather than dropped. replay
+    // stays 0 on purpose — a one-shot navigation event must not be re-delivered to a later
+    // collector (e.g. after re-login) and bounce the user back to login.
+    private val _events = MutableSharedFlow<SessionEvent>(
+        extraBufferCapacity = 16,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
     val events: SharedFlow<SessionEvent> = _events.asSharedFlow()
 
     fun emit(event: SessionEvent) {
