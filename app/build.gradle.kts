@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.bikeshare.app"
-    compileSdk = 36
+    compileSdk = 37
 
     val tagVersion = (project.findProperty("VERSION_NAME") as? String)?.takeIf { it.isNotBlank() } ?: "1.0.0"
     val commitCount = (project.findProperty("VERSION_CODE") as? String)?.toIntOrNull() ?: 1
