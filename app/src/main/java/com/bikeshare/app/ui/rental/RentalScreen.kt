@@ -11,7 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -101,7 +105,7 @@ fun RentalScreen(
 }
 
 @Composable
-private fun RentedBikeCard(
+internal fun RentedBikeCard(
     bike: RentedBikeDto,
     onReturn: () -> Unit,
 ) {
@@ -133,17 +137,38 @@ private fun RentedBikeCard(
 
             bike.currentCode?.let { code ->
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.Lock,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(R.string.lock_code, code),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.lock_code, code),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+
+                    bike.oldCode?.takeIf { it.isNotBlank() }?.let { oldCode ->
+                        val previousLabel = stringResource(R.string.old_lock_code)
+                        Text(
+                            text = buildAnnotatedString {
+                                append(previousLabel)
+                                append(' ')
+                                withStyle(SpanStyle(textDecoration = TextDecoration.LineThrough)) {
+                                    append(oldCode)
+                                }
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
 
