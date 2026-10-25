@@ -120,4 +120,22 @@ class RentSystemDtoParsingTest {
         assertNull(problem!!.code)
         assertNull(problem.params)
     }
+
+    @Test
+    fun `RentedBikeDto parses oldCode returned after the lock code rotates`() {
+        val json = """
+            {
+              "bikeNum": 5,
+              "currentCode": "5678",
+              "rentedSeconds": 120,
+              "oldCode": "1234"
+            }
+        """.trimIndent()
+
+        val dto = moshi.adapter(RentedBikeDto::class.java).fromJson(json)
+        assertNotNull(dto)
+        assertEquals(5, dto!!.bikeNum)
+        assertEquals("5678", dto.currentCode)
+        assertEquals("1234", dto.oldCode)
+    }
 }
